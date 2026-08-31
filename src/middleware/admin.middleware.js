@@ -1,5 +1,6 @@
 import { UserModel } from "../models/user.model.js"
 import ApiError from "../utils/ApiError.js"
+
  const verifyAdmin=async(req,res,next)=>{
     try {
         // const user=await UserModel.findById(req.user?._id)
