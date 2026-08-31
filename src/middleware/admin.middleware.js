@@ -11,5 +11,6 @@ import ApiError from "../utils/ApiError.js"
     } catch (error) {
         next(error)
     }
+    
 }
 export default verifyAdmin
