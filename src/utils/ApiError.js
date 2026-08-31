@@ -5,4 +5,4 @@ class ApiError extends Error{
         this.success=success
     }
 }
-export{ApiError}
+export default ApiError
