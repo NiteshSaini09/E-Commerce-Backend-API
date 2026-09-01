@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { ProductModel } from "../models/product.model.js";
 import ApiError from "../utils/ApiError.js";
+import uploadOnCloudinary from "../utils/upload.cloudinary.js";
 
 // ----------Create product-----------------
 
@@ -107,25 +108,26 @@ export const updateProduct = async (req, res, next) => {
     if (name) data.name = name;
     if (brand) data.brand = brand;
     if (price) data.price = price;
-    if (discount===0||discount>0) data.discount = discount;
-    if (stock<0 ||stock){
-      const newStock= product.stock+stock;
-      if(newStock>=0){
-        data.stock=newStock
+    if (discount === 0 || discount > 0) data.discount = discount;
+    if (stock < 0 || stock) {
+      const newStock = product.stock + stock;
+      if (newStock >= 0) {
+        data.stock = newStock;
       }
-    }if(stock===0){
-      data.stock=stock
+    }
+    if (stock === 0) {
+      data.stock = stock;
     }
     if (category) data.category = category;
     if (status) data.status = status;
-    if (discount>=0 && price) {
-      const finalPrice = price - (price * discount / 100);
+    if (discount >= 0 && price) {
+      const finalPrice = price - (price * discount) / 100;
       data.finalprice = finalPrice;
-    } else if (discount>=0 && !price) {
-      const finalPrice = product.price - (product.price * discount / 100);
+    } else if (discount >= 0 && !price) {
+      const finalPrice = product.price - (product.price * discount) / 100;
       data.finalprice = finalPrice;
     } else if (!discount && price) {
-      const finalPrice = price - (price * product.discount / 100);
+      const finalPrice = price - (price * product.discount) / 100;
       data.finalprice = finalPrice;
     }
     const updatedProduct = await ProductModel.findOneAndUpdate(
@@ -171,6 +173,34 @@ export const deleteProduct = async (req, res, next) => {
       message: "Product deleted successfully",
       deletedProduct,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ---------Upload image---------
+
+export const uploadImage = async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new ApiError(400, "invalid prduct id to upload product image");
+    }
+    const product = await ProductModel.findById(req.params?.id);
+    if (!product) {
+      throw new ApiError(404, "can't find product for upload product image");
+    }
+
+    for (let i = 0; i < req.files.length; i++) {
+      const publicURL = await uploadOnCloudinary(req.files[i].path);
+      if(publicURL!=null){
+        product.productimages.push(publicURL)
+      }
+    }
+    await product.save()
+    res.status(201).json({
+      success:true,
+      message:"Product images uploaded successfully"
+    })
   } catch (error) {
     next(error);
   }
