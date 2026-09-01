@@ -1,7 +1,7 @@
 import Joi from "joi";
-export const validate = (schema) => {
+export const validate = (schema,target="body") => {
   return (req, res, next) => {
-    const { error, value } = schema.validate(req.body, {
+    const { error, value } = schema.validate(req[target], {
       abortEarly: false,
       stripUnknown: true,
     });
@@ -11,7 +11,11 @@ export const validate = (schema) => {
         message: error.details[0].message,
       });
     }
-    req.body = value;
+    if(target=='query'){
+      req.validQuery=value
+    }else{
+       req[target] = value;
+    }
     next();
   };
 };

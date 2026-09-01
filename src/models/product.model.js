@@ -1,47 +1,68 @@
-import { number, required, string } from "joi";
 import mongoose from "mongoose";
-const productSchema = new mongoose.Schema({
-  name: {
-    type: string,
-    required: [true, "product name is required"],
-    trim: true,
-    min: 2,
+const productSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "product name is required"],
+      trim: true,
+      minlength: 2,
+    },
+    description: {
+      type: String,
+      trim: true,
+    },
+    brand: {
+      type: String,
+      required: true,
+      minlength: 2,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    discount: {
+      type: Number,
+      default: 0,
+      min:0,
+      max:100
+    },
+    finalprice: {
+      type: Number,
+    },
+    stock: {
+      type: Number,
+      default: 0,
+      min:0
+    },
+    category: {
+      type: String,
+      enum: [
+        "item",
+        "cloth",
+        "shoes",
+        "mobile",
+        "laptop",
+        "electronics",
+        "beauty",
+        "furniture",
+      ],
+      default:"item"
+    },
+    productimages: [{ type: String }],
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default:"active"
+    },
   },
-  description: {
-    type: string,
-    trim: true,
-  },
-  brand: {
-    type: string,
-    required: true,
-    min: 2,
-  },
-  price: {
-    type: number,
-    required: true,
-    min: 49,
-  },
-  discount: {
-    type: number,
-    default: 0,
-  },
-  finalprice: {
-    type: number,
-  },
-  stock: {
-    type: number,
-    default: 1,
-  },
-  category: {
-    type: string,
-    enum: ["cloth", "shoes"],
-  },
-  productimages: [{ type: string }],
-  status:{
-    type:string,
-    enum:['active','disactive']
+  { timestamps: true },
+);
+productSchema.pre('save',async function() {
+  if(this.isModified('price') || this.isModified("discount")){
+    this.finalprice=this.price-(this.price*this.discount/100)
+    return
   }
-},{timestamps:true});
+  return
+})
 
-
-export const ProductModel=mongoose.model("Product",productSchema)
+export const ProductModel = mongoose.model("Product", productSchema);
