@@ -189,7 +189,9 @@ export const uploadImage = async (req, res, next) => {
     if (!product) {
       throw new ApiError(404, "can't find product for upload product image");
     }
-
+    if(req.files.length==0){
+      console.log("No files provided to upload")
+    }
     for (let i = 0; i < req.files.length; i++) {
       const publicURL = await uploadOnCloudinary(req.files[i].path);
       if(publicURL!=null){
