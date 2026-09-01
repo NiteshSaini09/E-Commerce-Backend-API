@@ -108,7 +108,14 @@ export const updateProduct = async (req, res, next) => {
     if (brand) data.brand = brand;
     if (price) data.price = price;
     if (discount===0||discount>0) data.discount = discount;
-    if (stock===0||stock>0) data.stock = stock;
+    if (stock<0 ||stock){
+      const newStock= product.stock+stock;
+      if(newStock>=0){
+        data.stock=newStock
+      }
+    }if(stock===0){
+      data.stock=stock
+    }
     if (category) data.category = category;
     if (status) data.status = status;
     if (discount>=0 && price) {

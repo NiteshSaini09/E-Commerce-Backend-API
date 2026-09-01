@@ -32,7 +32,7 @@ const productSchema = new mongoose.Schema(
     stock: {
       type: Number,
       default: 0,
-      min:0
+      min:[0,"Stock must 0 or greater"]
     },
     category: {
       type: String,

@@ -28,7 +28,7 @@ export const updateProductSchema = Joi.object({
   brand: Joi.string().min(2).optional(),
   price: Joi.number().min(1).optional(),
   discount: Joi.number().min(0).max(100).optional(),
-  stock: Joi.number().default(0).min(0).optional(),
+  stock: Joi.number().optional(),
   category: Joi.string()
     .valid(
       "cloth",
