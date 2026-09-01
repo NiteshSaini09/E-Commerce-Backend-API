@@ -4,6 +4,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { errorHandler } from './middleware/errorHandler.middleware.js'
 import userRoutes from './routes/user.routes.js'
+import productRoutes from './routes/product.routes.js'
 const app=express()
 app.use(express.json())
 app.use(express.urlencoded())
@@ -14,6 +15,7 @@ app.get('/',(req,res)=>{
     res.send("e commerse app is running")
 })
 app.use('/api/v1/user',userRoutes)
+app.use('/api/v1/product',productRoutes)
 
 
 app.use(errorHandler)

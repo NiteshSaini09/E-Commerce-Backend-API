@@ -1,0 +1,170 @@
+import mongoose from "mongoose";
+import { ProductModel } from "../models/product.model.js";
+import ApiError from "../utils/ApiError.js";
+
+// ----------Create product-----------------
+
+export const create = async (req, res, next) => {
+  try {
+    const {
+      name,
+      description,
+      brand,
+      price,
+      discount,
+      stock,
+      category,
+      status,
+    } = req.body;
+    const data = {
+      user: req.user?._id,
+      name,
+    };
+    if (description) data.description = description;
+    if (brand) data.brand = brand;
+    if (price === 0 || price > 0) data.price = price;
+    if (discount === 0 || discount > 0) data.discount = discount;
+    if (stock === 0 || stock > 0) data.stock = stock;
+    if (category) data.category = category;
+    if (status) data.status = status;
+    const product = await ProductModel.create(data);
+    if (!product) {
+      throw new ApiError(500, "Error while adding product");
+    }
+    res.status(200).json({
+      success: true,
+      message: "Product added successfully",
+      product,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ----------Get all products-------------
+
+export const getAll = async (req, res, next) => {
+  try {
+    const products = await ProductModel.find();
+    const totalProducts = await ProductModel.countDocuments();
+    res.status(200).json({
+      success: true,
+      message: "Products retrived",
+      totalProducts,
+      products,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// -------------get product  by id---------
+
+export const getProduct = async (req, res, next) => {
+  try {
+    const id = req.params?.id;
+    if (!mongoose.isValidObjectId(id)) {
+      throw new ApiError(400, "invalid product id");
+    }
+    const product = await ProductModel.findById(id);
+    if (!product) {
+      throw new ApiError(404, "Product not found");
+    }
+    res.status(200).json({
+      success: true,
+      message: "Product retrived",
+      product,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// --------------Update Product---------------
+
+export const updateProduct = async (req, res, next) => {
+  try {
+    const id = req.params?.id;
+    if (!mongoose.isValidObjectId(id)) {
+      throw new ApiError(400, "invalid product id");
+    }
+    const product = await ProductModel.findById(id);
+    if (!product) {
+      throw new ApiError(404, "Product not found for update");
+    }
+    const {
+      description,
+      name,
+      brand,
+      price,
+      discount,
+      stock,
+      category,
+      status,
+    } = req.body;
+    const data = {};
+    if (description) data.description = description;
+    if (name) data.name = name;
+    if (brand) data.brand = brand;
+    if (price) data.price = price;
+    if (discount===0||discount>0) data.discount = discount;
+    if (stock===0||stock>0) data.stock = stock;
+    if (category) data.category = category;
+    if (status) data.status = status;
+    if (discount>=0 && price) {
+      const finalPrice = price - (price * discount / 100);
+      data.finalprice = finalPrice;
+    } else if (discount>=0 && !price) {
+      const finalPrice = product.price - (product.price * discount / 100);
+      data.finalprice = finalPrice;
+    } else if (!discount && price) {
+      const finalPrice = price - (price * product.discount / 100);
+      data.finalprice = finalPrice;
+    }
+    const updatedProduct = await ProductModel.findOneAndUpdate(
+      { _id: id },
+      { $set: data },
+      { returnDocument: "after" },
+    );
+    if (!updatedProduct) {
+      throw new ApiError(500, "Can't update product");
+    }
+    res.status(200).json({
+      success: true,
+      message: "Product updated Successfully",
+      updatedProduct,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ---------delete------------
+
+export const deleteProduct = async (req, res, next) => {
+  try {
+    const id = req.params?.id;
+    if (!mongoose.isValidObjectId(id)) {
+      throw new ApiError(400, "Invalid Product id");
+    }
+    const product = await ProductModel.findOne({
+      _id: id,
+    });
+    if (!product) {
+      throw new ApiError(404, "Product not found for delete");
+    }
+    const deletedProduct = await ProductModel.findOneAndDelete({
+      _id: id,
+    });
+    if (!deletedProduct) {
+      throw new ApiError(500, "can't delete product");
+    }
+    res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+      deletedProduct,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -23,12 +23,12 @@ export const addProductSchema = Joi.object({
 });
 
 export const updateProductSchema = Joi.object({
-  name: Joi.string().min(2).trim(),
-  description: Joi.string().trim(),
-  brand: Joi.string().min(2),
-  price: Joi.number().min(0),
-  discount: Joi.number().min(0).max(100).default(0),
-  stock: Joi.number().default(0).min(0),
+  name: Joi.string().min(2).trim().optional(),
+  description: Joi.string().trim().optional(),
+  brand: Joi.string().min(2).optional(),
+  price: Joi.number().min(1).optional(),
+  discount: Joi.number().min(0).max(100).optional(),
+  stock: Joi.number().default(0).min(0).optional(),
   category: Joi.string()
     .valid(
       "cloth",
@@ -39,7 +39,7 @@ export const updateProductSchema = Joi.object({
       "electronics",
       "beauty",
       "furniture",
-    ).default("item"),
+    ).default("item").optional(),
   productimages: Joi.array().items(Joi.string().trim()).min(1).max(5),
-  status: Joi.string().valid("active", "inactive").default("active"),
+  status: Joi.string().valid("active", "inactive").default("active")
 }).min(1);

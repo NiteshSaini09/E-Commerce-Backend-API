@@ -54,6 +54,10 @@ const productSchema = new mongoose.Schema(
       enum: ["active", "inactive"],
       default:"active"
     },
+    user:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:'User'
+    }
   },
   { timestamps: true },
 );
