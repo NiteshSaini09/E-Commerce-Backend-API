@@ -14,8 +14,4 @@ const upload=multer({
     fileSize:5*1024*1024
   }
 })
-// export const upload = multer({
-//   storage,
-// });
-
 export default upload

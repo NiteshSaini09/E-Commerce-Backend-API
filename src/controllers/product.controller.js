@@ -245,10 +245,6 @@ export const uploadImage = async (req, res, next) => {
 
 
 
-
-
-
-
 // ------------------Delete Product Image--------------------
 export const deleteProductImage=async (req,res,next)=>{
   try {
@@ -267,10 +263,8 @@ export const deleteProductImage=async (req,res,next)=>{
     if(!productimageObject){
       throw new ApiError(404,"Can't find image with provided publicId")
     }
-    // const publicURL=productimageObject.publicURL
 
     const result=await deleteFromCludinary(publicId)
-    // console.log(result.result)
     let rmv=undefined
     if(result.result==="ok"){
        rmv=await ProductModel.updateOne(

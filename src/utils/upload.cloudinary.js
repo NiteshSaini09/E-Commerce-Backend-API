@@ -30,6 +30,8 @@ const uploadOnCloudinary=async (localFilePath,folder)=>{
     }
 }
 
+
+
 const deleteFromCludinary=async(publicId)=>{
     try {
         const res=await cloudinary.uploader.destroy(publicId,{ invalidate: true })
