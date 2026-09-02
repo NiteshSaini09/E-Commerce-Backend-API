@@ -18,7 +18,7 @@ export const addProductSchema = Joi.object({
       "furniture",
     )
     .default("item"),
-  productimages: Joi.array().items(Joi.string().trim()).min(1).max(5),
+  // productImages: Joi.array().items(Joi.string().trim()).min(1).max(5),
   status: Joi.string().valid("active", "inactive").default("active"),
 });
 

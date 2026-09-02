@@ -1,6 +1,7 @@
 import {v2 as cloudinary} from "cloudinary";
 import dotenv from 'dotenv'
 import fs from "fs"
+import ApiError from "./ApiError.js";
 dotenv.config()
 cloudinary.config(
     {
@@ -9,19 +10,22 @@ cloudinary.config(
         api_secret:process.env.CLOUDINARY_API_SECRET
     }
 )
-const uploadOnCloudinary=async (localFilePath)=>{
+const uploadOnCloudinary=async (localFilePath,folder)=>{
     try {
         if(!localFilePath){
-            return null
+            return null 
         }
-        const result=await cloudinary.uploader.upload(localFilePath,{resource_type:"auto"})
-        console.log("File successfully uploaded on cloudinary")
+        const result=await cloudinary.uploader.upload(localFilePath,{
+            resource_type:"auto",
+            folder:folder
+        })
         fs.unlinkSync(localFilePath)
-        return result.url
+        return result
     } catch (error) {
-        if(localFilePath){
+        if(fs.existsSync(localFilePath)){
             fs.unlinkSync(localFilePath)
         }
+        console.log(`Cloudinary upload error :${err}`)
         return null
     }
 }

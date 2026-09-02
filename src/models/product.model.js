@@ -48,7 +48,10 @@ const productSchema = new mongoose.Schema(
       ],
       default:"item"
     },
-    productimages: [{ type: String }],
+    productimages: [
+      { type:Object,
+       }
+    ],
     status: {
       type: String,
       enum: ["active", "inactive"],

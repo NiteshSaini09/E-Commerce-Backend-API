@@ -17,9 +17,28 @@ export const create = async (req, res, next) => {
       category,
       status,
     } = req.body;
+    const files = req.files;
+    if (!files || files.length === 0) {
+      throw new ApiError(400, "At least one product image is required");
+    }
+    const imageURLs = [];
+    for (const file of files) {
+      const result = await uploadOnCloudinary(
+        file.path,
+        process.env.CLOUDINARY_FOLDER,
+      );
+      if (!result) {
+        throw new ApiError(500, "Product image Upload failed");
+      }
+      imageURLs.push({
+        publicURL: result.url,
+        publicId: result.public_id,
+      });
+    }
     const data = {
       user: req.user?._id,
       name,
+      productimages: imageURLs,
     };
     if (description) data.description = description;
     if (brand) data.brand = brand;
@@ -189,20 +208,35 @@ export const uploadImage = async (req, res, next) => {
     if (!product) {
       throw new ApiError(404, "can't find product for upload product image");
     }
-    if(req.files.length==0){
-      throw new ApiError(400,"No files for upload")
+    if (req.files.length == 0) {
+      throw new ApiError(400, "No files for upload");
     }
     for (let i = 0; i < req.files.length; i++) {
-      const publicURL = await uploadOnCloudinary(req.files[i].path);
-      if(publicURL!=null){
-        product.productimages.push(publicURL)
+      const result = await uploadOnCloudinary(
+        req.files[i].path,
+        process.env.CLOUDINARY_FOLDER,
+      );
+      if (result != null || result != undefined) {
+        product.productimages.push({
+          publicURL: result.url,
+          publicId: result.public_id,
+        });
       }
     }
-    await product.save()
-    res.status(201).json({
-      success:true,
-      message:"Product images uploaded successfully"
-    })
+    if (product.isModified("productimages")) {
+      await product.save();
+      res.status(201).json({
+        success: true,
+        message: "Product images uploaded successfully",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "No Changes",
+      });
+    }
+
+    // console.log("product image uploaded successfully")
   } catch (error) {
     next(error);
   }
