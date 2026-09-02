@@ -23,8 +23,8 @@ const productSchema = new mongoose.Schema(
     discount: {
       type: Number,
       default: 0,
-      min:0,
-      max:100
+      min: 0,
+      max: 100,
     },
     finalprice: {
       type: Number,
@@ -32,7 +32,7 @@ const productSchema = new mongoose.Schema(
     stock: {
       type: Number,
       default: 0,
-      min:[0,"Stock must 0 or greater"]
+      min: [0, "Stock must 0 or greater"],
     },
     category: {
       type: String,
@@ -46,30 +46,28 @@ const productSchema = new mongoose.Schema(
         "beauty",
         "furniture",
       ],
-      default:"item"
+      default: "item",
     },
-    productimages: [
-      { type:Object,
-       }
-    ],
+    productimages: [{ publicURL: String, publicId: String }],
+    
     status: {
       type: String,
       enum: ["active", "inactive"],
-      default:"active"
+      default: "active",
     },
-    user:{
-      type:mongoose.Schema.Types.ObjectId,
-      ref:'User'
-    }
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true },
 );
-productSchema.pre('save',async function() {
-  if(this.isModified('price') || this.isModified("discount")){
-    this.finalprice=this.price-(this.price*this.discount/100)
-    return
+productSchema.pre("save", async function () {
+  if (this.isModified("price") || this.isModified("discount")) {
+    this.finalprice = this.price - (this.price * this.discount) / 100;
+    return;
   }
-  return
-})
+  return;
+});
 
 export const ProductModel = mongoose.model("Product", productSchema);
