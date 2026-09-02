@@ -17,5 +17,6 @@ router.route("/:id").get(productController.getProduct);
 router.route("/:id").patch(verifyJWT,verifyAdmin,validate(updateProductSchema),productController.updateProduct,);
 router.route("/:id").delete(verifyJWT, verifyAdmin, productController.deleteProduct);
 router.route("/:id/images").post(verifyJWT,verifyAdmin,upload.array("productImages",5),productController.uploadImage)
+router.route("/:id/images").delete(verifyJWT, verifyAdmin, productController.deleteProductImage);
 
 export default router;

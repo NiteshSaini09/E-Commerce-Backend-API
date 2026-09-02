@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 import { ProductModel } from "../models/product.model.js";
 import ApiError from "../utils/ApiError.js";
-import uploadOnCloudinary from "../utils/upload.cloudinary.js";
-
+import {uploadOnCloudinary,deleteFromCludinary} from "../utils/upload.cloudinary.js";
 // ----------Create product-----------------
 
 export const create = async (req, res, next) => {
@@ -241,3 +240,54 @@ export const uploadImage = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
+
+
+
+
+
+
+// ------------------Delete Product Image--------------------
+export const deleteProductImage=async (req,res,next)=>{
+  try {
+    const productId=req.params?.id;
+    const {publicId}=req.body
+    if(!mongoose.isValidObjectId(productId)){
+      throw new ApiError(400,"Invalid product id")
+    }
+    const product=await ProductModel.findById(productId)
+    if(!product){
+      throw new ApiError(404,"product not found")
+    }
+    // console.log(product.productimages)
+    const productimages=product.productimages
+    const productimageObject= productimages.find(item => item.publicId === publicId)
+    if(!productimageObject){
+      throw new ApiError(404,"Can't find image with provided publicId")
+    }
+    // const publicURL=productimageObject.publicURL
+
+    const result=await deleteFromCludinary(publicId)
+    // console.log(result.result)
+    let rmv=undefined
+    if(result.result==="ok"){
+       rmv=await ProductModel.updateOne(
+      {_id:productId},
+      {$pull:{productimages:{publicId:publicId}}}
+    )
+    rmv=rmv.acknowledged
+    }else{
+      rmv=false
+    }
+    res.status(200).json({
+      success:true,
+      Cloudinary_Delete_Status:result.result,
+      Database_delete_status:rmv
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
