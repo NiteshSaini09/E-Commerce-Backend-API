@@ -8,6 +8,7 @@ import {
 import mongoose from "mongoose";
 import isEmpty from "../utils/isObjectEmpty.js";
 import extractPublicId from "../utils/extractPublicIdFromCloudinaryURL.js";
+import { ProductModel } from "../models/product.model.js";
 
 // --------------------Create Category -----------------------------------------------------------------
 
@@ -176,6 +177,11 @@ export const deleteCategory=async (req,res,next)=>{
     const category = await CategoryModel.findById(categoryId);
     if (!category) {
       throw new ApiError(404, "Category not found for delete");
+    }
+    const productWithCategory=await ProductModel.find({category:categoryId})
+    const isProductWithCategoryObjEmpty=isEmpty(productWithCategory)
+    if(!isProductWithCategoryObjEmpty){
+      throw new ApiError(400,"Cannot delete category because products are associated with it.")
     }
     if(category.image!=null){
       const publicId=extractPublicId(category.image)

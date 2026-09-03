@@ -4,6 +4,8 @@ import ApiError from "../utils/ApiError.js";
 import {uploadOnCloudinary,deleteFromCludinary} from "../utils/upload.cloudinary.js";
 import fs from "fs"
 import { CategoryModel } from "../models/category.model.js";
+
+
 // ----------Create product-----------------
 
 export const create = async (req, res, next) => {
@@ -31,11 +33,16 @@ export const create = async (req, res, next) => {
     if (stock === 0 || stock > 0) data.stock = stock;
     if (category){
       const isCategoryExists=await CategoryModel.findOne({name:category})
-      console.log(isCategoryExists)
+      // console.log(isCategoryExists)
       if(isCategoryExists){
-        data.category = isCategoryExists._id
+        if(isCategoryExists.isActive!=false){
+          data.category = isCategoryExists._id
+        }else{
+        throw new ApiError(400,`${category} Category is Not Active`)
+        }
+
       }else{
-        throw new ApiError(401,"No such category available")
+        throw new ApiError(404,"No Such Category Found")
       }
     };
     if (status) data.status = status;
@@ -62,11 +69,12 @@ export const create = async (req, res, next) => {
     if (!product) {
       throw new ApiError(500, "Error while adding product");
     }
-    console.log(req.files)
+    const createdProduct=await ProductModel.findById(product._id).populate("category");
+    // console.log(req.files)
     res.status(200).json({
       success: true,
       message: "Product added successfully",
-      product,
+      createdProduct,
     });
   } catch (error) {
     for(const file of req.files ?? []){
@@ -82,7 +90,7 @@ export const create = async (req, res, next) => {
 
 export const getAll = async (req, res, next) => {
   try {
-    const products = await ProductModel.find();
+    const products = await ProductModel.find().populate("category");
     const totalProducts = await ProductModel.countDocuments();
     res.status(200).json({
       success: true,
