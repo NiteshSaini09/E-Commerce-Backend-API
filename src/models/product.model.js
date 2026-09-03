@@ -35,18 +35,8 @@ const productSchema = new mongoose.Schema(
       min: [0, "Stock must 0 or greater"],
     },
     category: {
-      type: String,
-      enum: [
-        "item",
-        "cloth",
-        "shoes",
-        "mobile",
-        "laptop",
-        "electronics",
-        "beauty",
-        "furniture",
-      ],
-      default: "item",
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Category"
     },
     productimages: [{ publicURL: String, publicId: String }],
     
