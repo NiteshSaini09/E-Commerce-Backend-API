@@ -1,4 +1,4 @@
-import { string } from "joi";
+
 import mongoose from "mongoose";
 const categorySchema=new mongoose.Schema({
     name:{
@@ -10,7 +10,7 @@ const categorySchema=new mongoose.Schema({
         maxlength:30
     },
     description:{
-        type:string,
+        type:String,
         trim:true,
         maxlength:500
     },
