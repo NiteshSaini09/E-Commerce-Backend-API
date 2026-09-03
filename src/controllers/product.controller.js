@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { ProductModel } from "../models/product.model.js";
 import ApiError from "../utils/ApiError.js";
 import {uploadOnCloudinary,deleteFromCludinary} from "../utils/upload.cloudinary.js";
+import fs from "fs"
 // ----------Create product-----------------
 
 export const create = async (req, res, next) => {
@@ -203,6 +204,9 @@ export const uploadImage = async (req, res, next) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
       throw new ApiError(400, "invalid prduct id to upload product image");
     }
+    if(!req.files || req.files?.length<=0){
+      throw new ApiError(400, "Give at least one product image");
+    }
     const product = await ProductModel.findById(req.params?.id);
     if (!product) {
       throw new ApiError(404, "can't find product for upload product image");
@@ -210,6 +214,14 @@ export const uploadImage = async (req, res, next) => {
     if (req.files.length == 0) {
       throw new ApiError(400, "No files for upload");
     }
+    if(product.productimages.length+req.files.length>5){
+      for(const img of req.files){
+        // console.log(img)
+        fs.unlinkSync(img.path)
+      }
+      throw new ApiError(400,`Maximum 5 images can be stored for a product, product already have ${product.productimages.length},you can add ${5-product.productimages.length} images`)
+    }
+
     for (let i = 0; i < req.files.length; i++) {
       const result = await uploadOnCloudinary(
         req.files[i].path,
