@@ -10,6 +10,7 @@ const router=Router()
 router.route("/create").post(verifyJWT,verifyAdmin,upload.single('image'),validate(createCategorySchema),controller.createCategory)
 router.route("/").get(controller.getAllCategories)
 router.route("/:id").get(controller.getCategoryById)
+router.route("/:id").delete(verifyJWT,verifyAdmin,controller.deleteCategory)
 router.route("/:id").patch(upload.single('image'),validate(updateCategorySchema),controller.updateCategory)
 
 export default router

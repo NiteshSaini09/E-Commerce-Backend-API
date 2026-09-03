@@ -7,6 +7,7 @@ import {
 } from "../utils/upload.cloudinary.js";
 import mongoose from "mongoose";
 import isEmpty from "../utils/isObjectEmpty.js";
+import extractPublicId from "../utils/extractPublicIdFromCloudinaryURL.js";
 
 // --------------------Create Category -----------------------------------------------------------------
 
@@ -163,4 +164,39 @@ export const updateCategory = async (req, res, next) => {
     next(error);
   }
 };
+
+// ------------------------------------------Delete Category -----------------------------------------
+
+export const deleteCategory=async (req,res,next)=>{
+  try {
+     const categoryId = req.params?.id;
+    if (!mongoose.isValidObjectId(categoryId)) {
+      throw new ApiError(400, "Invalid Category id");
+    }
+    const category = await CategoryModel.findById(categoryId);
+    if (!category) {
+      throw new ApiError(404, "Category not found for delete");
+    }
+    if(category.image!=null){
+      const publicId=extractPublicId(category.image)
+      console.log(publicId)
+      const cloudinaryImageDeleteStatus= await deleteFromCludinary(publicId)
+      console.log(cloudinaryImageDeleteStatus)
+    }
+    const deletedCategory = await CategoryModel.findByIdAndDelete(categoryId,{returnDocument:"after"});
+    if (!deletedCategory) {
+      throw new ApiError(500, "Category is not Deleted");
+    }
+
+    res.status(200).json({
+
+      success:true,
+      message:"Category Deleted Successfully",
+      deletedCategory
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
 
