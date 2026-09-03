@@ -3,6 +3,7 @@ import { ProductModel } from "../models/product.model.js";
 import ApiError from "../utils/ApiError.js";
 import {uploadOnCloudinary,deleteFromCludinary} from "../utils/upload.cloudinary.js";
 import fs from "fs"
+import { CategoryModel } from "../models/category.model.js";
 // ----------Create product-----------------
 
 export const create = async (req, res, next) => {
@@ -18,6 +19,26 @@ export const create = async (req, res, next) => {
       status,
     } = req.body;
     const files = req.files;
+    const data = {
+      user: req.user?._id,
+      name
+      // productimages: imageURLs,
+    };
+    if (description) data.description = description;
+    if (brand) data.brand = brand;
+    if (price === 0 || price > 0) data.price = price;
+    if (discount === 0 || discount > 0) data.discount = discount;
+    if (stock === 0 || stock > 0) data.stock = stock;
+    if (category){
+      const isCategoryExists=await CategoryModel.findOne({name:category})
+      console.log(isCategoryExists)
+      if(isCategoryExists){
+        data.category = isCategoryExists._id
+      }else{
+        throw new ApiError(401,"No such category available")
+      }
+    };
+    if (status) data.status = status;
     if (!files || files.length === 0) {
       throw new ApiError(400, "At least one product image is required");
     }
@@ -35,28 +56,24 @@ export const create = async (req, res, next) => {
         publicId: result.public_id,
       });
     }
-    const data = {
-      user: req.user?._id,
-      name,
-      productimages: imageURLs,
-    };
-    if (description) data.description = description;
-    if (brand) data.brand = brand;
-    if (price === 0 || price > 0) data.price = price;
-    if (discount === 0 || discount > 0) data.discount = discount;
-    if (stock === 0 || stock > 0) data.stock = stock;
-    if (category) data.category = category;
-    if (status) data.status = status;
+    if (imageURLs.length>0) data.productimages = imageURLs;
+    
     const product = await ProductModel.create(data);
     if (!product) {
       throw new ApiError(500, "Error while adding product");
     }
+    console.log(req.files)
     res.status(200).json({
       success: true,
       message: "Product added successfully",
       product,
     });
   } catch (error) {
+    for(const file of req.files ?? []){
+      if(file.path && fs.existsSync(file.path)){
+        fs.unlinkSync(file.path)
+      }
+    }
     next(error);
   }
 };
