@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 export const register = async (req, res, next) => {
   try {
+    res.render("register")
     const { name, email, password } = req.body;
     const isUserExists = await UserModel.findOne({ email });
     if (isUserExists) {
@@ -17,6 +18,7 @@ export const register = async (req, res, next) => {
     const registeredUser = await UserModel.findById(user?._id).select(
       "-password -createdAt -updatedAt",
     );
+    console.log(registeredUser)
     res.status(201).json({
       success: true,
       message: "registration success",

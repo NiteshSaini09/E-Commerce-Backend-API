@@ -15,9 +15,23 @@ import { ProductModel } from "../models/product.model.js";
 export const createCategory = async (req, res, next) => {
   try {
     const { name, description, isActive } = req.body;
-    const existingCategory = await CategoryModel.findOne({ name });
+    const categoryName = name?.trim();
+    if (!categoryName || categoryName.length < 2) {
+      throw new ApiError(400, `Category name can't empty or less than 2`);
+    }
+    const existingCategory = await CategoryModel.findOne({
+      name: categoryName.toLowerCase(),
+    });
     if (existingCategory) {
-      throw new ApiError(400, `Category (${name}) already exists`);
+      throw new ApiError(400, `Category (${categoryName}) already exists`);
+    }
+    const categoryNameRegex = /^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/;
+
+    if (!categoryNameRegex.test(name.trim())) {
+      throw new ApiError(
+        400,
+        "Category name can contain only letters, numbers and spaces",
+      );
     }
     let cloudinaryPublicURL = undefined;
     if (req.file) {
@@ -30,17 +44,17 @@ export const createCategory = async (req, res, next) => {
     }
 
     const data = {
-      name,
+      name: categoryName.toLowerCase(),
     };
     if (cloudinaryPublicURL) data.image = cloudinaryPublicURL;
     if (description) data.description = description;
-    if (isActive == false) data.isActive = isActive;
+    if (isActive != undefined) data.isActive = isActive;
 
     const category = await CategoryModel.create(data);
     if (!category) {
       throw new ApiError(500, "New Category not created");
     }
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: "New Category Added Successfully",
       category,
@@ -94,7 +108,7 @@ export const getCategoryById = async (req, res, next) => {
 
 export const updateCategory = async (req, res, next) => {
   try {
-    const isBodyEmpty=isEmpty(req.body)
+    const isBodyEmpty = isEmpty(req.body);
     if (isBodyEmpty && !req.file) {
       throw new ApiError(400, "Provide at least one field to update");
     }
@@ -108,14 +122,35 @@ export const updateCategory = async (req, res, next) => {
       throw new ApiError(404, "Category not found for Update category");
     }
     const data = {};
-    if (name) {
-      if (name === category.name) {
-        console.log("Category name is same as current name");
+    if (name != undefined) {
+      const categoryName = name?.trim();
+      if (!categoryName) {
+        throw new ApiError(400, "Category name Can't be empty");
+      }
+      const isCategoryAlreadyExists = await CategoryModel.findOne({
+        name: categoryName.toLowerCase(),
+      });
+      if (
+        isCategoryAlreadyExists &&
+        !category._id.equals(isCategoryAlreadyExists._id)
+      ) {
+        throw new ApiError(
+          400,
+          "can't update category, This category already exists",
+        );
       } else {
-        data.name = name;
+        data.name = categoryName.toLowerCase();
+      }
+      const categoryNameRegex = /^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/;
+
+      if (!categoryNameRegex.test(name.trim())) {
+        throw new ApiError(
+          400,
+          "Category name can contain only letters, numbers and spaces",
+        );
       }
     }
-    if (description) {
+    if (description !== undefined) {
       if (description === category.description) {
         console.log("Description is same as current description");
       } else {
@@ -131,14 +166,26 @@ export const updateCategory = async (req, res, next) => {
     }
     let cloudinaryPublicURL = undefined;
     if (req.file) {
-      const imageLocalPath = req.file.path;
+      const imageLocalPath = req.file?.path;
       const result = await uploadOnCloudinary(imageLocalPath, "categoryimages");
+      if (result) {
+        if (category.image) {
+          const publicId = extractPublicId(category.image);
+          const oldImageDeleteStatus = await deleteFromCludinary(publicId);
+          if (oldImageDeleteStatus?.result != "ok") {
+            console.log("Can't delete old image");
+          } else {
+            console.log("Old category deleted success");
+          }
+        }
+      }
       if (!result) {
         throw new ApiError(
           500,
           "Cloudinary upload error while updating category image",
         );
       }
+
       cloudinaryPublicURL = result.url;
     }
     if (cloudinaryPublicURL) data.image = cloudinaryPublicURL;
@@ -162,15 +209,18 @@ export const updateCategory = async (req, res, next) => {
       updatedCategory,
     });
   } catch (error) {
+    if (req.file?.path && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
     next(error);
   }
 };
 
 // ------------------------------------------Delete Category -----------------------------------------
 
-export const deleteCategory=async (req,res,next)=>{
+export const deleteCategory = async (req, res, next) => {
   try {
-     const categoryId = req.params?.id;
+    const categoryId = req.params?.id;
     if (!mongoose.isValidObjectId(categoryId)) {
       throw new ApiError(400, "Invalid Category id");
     }
@@ -178,31 +228,32 @@ export const deleteCategory=async (req,res,next)=>{
     if (!category) {
       throw new ApiError(404, "Category not found for delete");
     }
-    const productWithCategory=await ProductModel.find({category:categoryId})
-    const isProductWithCategoryObjEmpty=isEmpty(productWithCategory)
-    if(!isProductWithCategoryObjEmpty){
-      throw new ApiError(400,"Cannot delete category because products are associated with it.")
+    const productWithCategory = await ProductModel.find({
+      category: categoryId,
+    });
+    if (productWithCategory.length > 0) {
+      throw new ApiError(
+        400,
+        "Cannot delete category because products are associated with it.",
+      );
     }
-    if(category.image!=null){
-      const publicId=extractPublicId(category.image)
-      console.log(publicId)
-      const cloudinaryImageDeleteStatus= await deleteFromCludinary(publicId)
-      console.log(cloudinaryImageDeleteStatus)
+    if (category.image != null) {
+      const publicId = extractPublicId(category.image);
+      console.log(publicId);
+      const cloudinaryImageDeleteStatus = await deleteFromCludinary(publicId);
+      console.log(cloudinaryImageDeleteStatus);
     }
-    const deletedCategory = await CategoryModel.findByIdAndDelete(categoryId,{returnDocument:"after"});
+    const deletedCategory = await CategoryModel.findByIdAndDelete(categoryId);
     if (!deletedCategory) {
       throw new ApiError(500, "Category is not Deleted");
     }
 
     res.status(200).json({
-
-      success:true,
-      message:"Category Deleted Successfully",
-      deletedCategory
-    })
-
+      success: true,
+      message: "Category Deleted Successfully",
+      deletedCategory,
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
-
+};

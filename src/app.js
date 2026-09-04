@@ -30,6 +30,9 @@ res.render("home")
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/category", categoryRoutes);
+app.get('/register',(req,res)=>{
+    res.render("register")
+})
 
 app.use(errorHandler);
 export { app };
