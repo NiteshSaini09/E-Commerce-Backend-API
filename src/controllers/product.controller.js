@@ -90,8 +90,32 @@ export const create = async (req, res, next) => {
 
 export const getAll = async (req, res, next) => {
   try {
-    const products = await ProductModel.find().populate("category");
-    const totalProducts = await ProductModel.countDocuments();
+    const search=req.query?.search
+    const query={}
+    if (search?.trim()) {
+      query.$or = [
+        {
+          name: {
+            $regex: search.trim(),
+            $options: "i",
+          },
+        },
+        {
+          description: {
+            $regex: search.trim(),
+            $options: "i",
+          },
+        },
+        {
+          brand: {
+            $regex: search.trim(),
+            $options: "i",
+          },
+        },
+      ];
+    }
+    const products = await ProductModel.find(query).populate("category","name").populate("user","name email");
+    const totalProducts = await ProductModel.countDocuments(query);
     res.status(200).json({
       success: true,
       message: "Products retrived",
