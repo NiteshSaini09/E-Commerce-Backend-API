@@ -48,6 +48,8 @@ export const querySchema=Joi.object({
   search:Joi.string().trim(),
   minPrice:Joi.number().min(0),
   maxPrice:Joi.number().min(0),
+  limit:Joi.number().min(1).max(20).default(5),
+  page:Joi.number().min(1).default(1),
   // sortBy:Joi.string().valid("price").default("price"),
   order:Joi.string().valid("price_asc","price_desc","newest","oldest"),
    category: Joi.string().custom((value, helpers) => {

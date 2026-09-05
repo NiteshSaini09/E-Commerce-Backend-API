@@ -98,6 +98,9 @@ export const getAll = async (req, res, next) => {
     const category = req.validQuery?.category;
     const minPrice = Number(req.validQuery?.minPrice);
     const maxPrice = Number(req.validQuery?.maxPrice);
+    const page = req.validQuery?.page;
+    const limit = req.validQuery?.limit;
+    const skip = (page - 1) * limit;
     let order = req.validQuery?.order;
     let sortOrder = undefined;
     let sortBy = undefined;
@@ -111,7 +114,9 @@ export const getAll = async (req, res, next) => {
         sortOrder = order == "newest" ? -1 : 1;
         sortBy = "createdAt";
       }
-      sort[sortBy] = sortOrder;
+     if( sortBy!=undefined &&sortOrder!=undefined){
+       sort[sortBy] = sortOrder;
+     }
     }
 
     const query = {};
@@ -164,13 +169,23 @@ export const getAll = async (req, res, next) => {
     }
     const products = await ProductModel.find(query)
       .sort(sort)
+      .skip(skip)
+      .limit(limit)
       .populate("category", "name")
       .populate("user", "name email");
     const totalProducts = await ProductModel.countDocuments(query);
+    const totalPages = Math.ceil(totalProducts / limit);
+    const hasNextPage = page < totalPages;
+    const hasPreviousPage = page > 1;
     res.status(200).json({
       success: true,
       message: "Products retrived",
       totalProducts,
+      totalPages,
+      currentPage: page,
+      limit,
+      hasNextPage,
+      hasPreviousPage,
       products,
     });
   } catch (error) {
