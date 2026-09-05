@@ -23,6 +23,10 @@ export const add = async (req, res, next) => {
     }
     data.items.push(item)
 
+    const isCartAlreadyCreated=await CartModel.findOne({user:req.user?._id})
+    if(isCartAlreadyCreated){
+      throw new ApiError(400,"Cart already exists")
+    }
     const cart=await CartModel.create(data)
     console.log("cart created")
     // console.log(data)/
