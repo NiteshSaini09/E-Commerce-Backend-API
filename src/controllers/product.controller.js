@@ -98,14 +98,33 @@ export const getAll = async (req, res, next) => {
     const category = req.validQuery?.category;
     const minPrice = Number(req.validQuery?.minPrice);
     const maxPrice = Number(req.validQuery?.maxPrice);
+    let order = req.validQuery?.order;
+    let sortOrder = undefined;
+    let sortBy = undefined;
+    const sort = {};
+    if (order) {
+      if (order == "price_asc" || order == "price_desc") {
+        sortOrder = order == "price_asc" ? 1 : -1;
+        sortBy = "price";
+      }
+      if (order == "newest" || order == "oldest") {
+        sortOrder = order == "newest" ? -1 : 1;
+        sortBy = "createdAt";
+      }
+      sort[sortBy] = sortOrder;
+    }
+
     const query = {};
     const price = {};
-    if (minPrice>=0) {
+    if (minPrice >= 0) {
       price.$gte = minPrice;
     }
-    if (maxPrice>=0) {
-      if(minPrice>maxPrice){
-        throw new ApiError(400,"minPrice should be less than or equal to maxPrice")
+    if (maxPrice >= 0) {
+      if (minPrice > maxPrice) {
+        throw new ApiError(
+          400,
+          "minPrice should be less than or equal to maxPrice",
+        );
       }
       price.$lte = maxPrice;
     }
@@ -113,7 +132,6 @@ export const getAll = async (req, res, next) => {
     if (!isPriceEmpty) {
       query.price = price;
     }
-    console.log(query);
 
     if (category) {
       if (!mongoose.isValidObjectId(category)) {
@@ -145,6 +163,7 @@ export const getAll = async (req, res, next) => {
       ];
     }
     const products = await ProductModel.find(query)
+      .sort(sort)
       .populate("category", "name")
       .populate("user", "name email");
     const totalProducts = await ProductModel.countDocuments(query);
