@@ -1,10 +1,13 @@
 import mongoose from "mongoose";
 import { ProductModel } from "../models/product.model.js";
 import ApiError from "../utils/ApiError.js";
-import {uploadOnCloudinary,deleteFromCludinary} from "../utils/upload.cloudinary.js";
-import fs from "fs"
+import {
+  uploadOnCloudinary,
+  deleteFromCludinary,
+} from "../utils/upload.cloudinary.js";
+import fs from "fs";
 import { CategoryModel } from "../models/category.model.js";
-
+import isEmpty from "../utils/isObjectEmpty.js";
 
 // ----------Create product-----------------
 
@@ -23,7 +26,7 @@ export const create = async (req, res, next) => {
     const files = req.files;
     const data = {
       user: req.user?._id,
-      name
+      name,
       // productimages: imageURLs,
     };
     if (description) data.description = description;
@@ -31,20 +34,19 @@ export const create = async (req, res, next) => {
     if (price === 0 || price > 0) data.price = price;
     if (discount === 0 || discount > 0) data.discount = discount;
     if (stock === 0 || stock > 0) data.stock = stock;
-    if (category){
-      const isCategoryExists=await CategoryModel.findOne({name:category})
+    if (category) {
+      const isCategoryExists = await CategoryModel.findOne({ name: category });
       // console.log(isCategoryExists)
-      if(isCategoryExists){
-        if(isCategoryExists.isActive!=false){
-          data.category = isCategoryExists._id
-        }else{
-        throw new ApiError(400,`${category} Category is Not Active`)
+      if (isCategoryExists) {
+        if (isCategoryExists.isActive != false) {
+          data.category = isCategoryExists._id;
+        } else {
+          throw new ApiError(400, `${category} Category is Not Active`);
         }
-
-      }else{
-        throw new ApiError(404,"No Such Category Found")
+      } else {
+        throw new ApiError(404, "No Such Category Found");
       }
-    };
+    }
     if (status) data.status = status;
     if (!files || files.length === 0) {
       throw new ApiError(400, "At least one product image is required");
@@ -63,13 +65,15 @@ export const create = async (req, res, next) => {
         publicId: result.public_id,
       });
     }
-    if (imageURLs.length>0) data.productimages = imageURLs;
-    
+    if (imageURLs.length > 0) data.productimages = imageURLs;
+
     const product = await ProductModel.create(data);
     if (!product) {
       throw new ApiError(500, "Error while adding product");
     }
-    const createdProduct=await ProductModel.findById(product._id).populate("category");
+    const createdProduct = await ProductModel.findById(product._id).populate(
+      "category",
+    );
     // console.log(req.files)
     res.status(200).json({
       success: true,
@@ -77,9 +81,9 @@ export const create = async (req, res, next) => {
       createdProduct,
     });
   } catch (error) {
-    for(const file of req.files ?? []){
-      if(file.path && fs.existsSync(file.path)){
-        fs.unlinkSync(file.path)
+    for (const file of req.files ?? []) {
+      if (file.path && fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
       }
     }
     next(error);
@@ -90,8 +94,34 @@ export const create = async (req, res, next) => {
 
 export const getAll = async (req, res, next) => {
   try {
-    const search=req.query?.search
-    const query={}
+    const search = req.query?.search;
+    const category = req.query?.category;
+    const minPrice = Number(req.query?.minPrice);
+    const maxPrice = Number(req.query?.maxPrice);
+    const query = {};
+    const price = {};
+    if (minPrice>=0) {
+      price.$gte = minPrice;
+    }
+    if (maxPrice>=0) {
+      if(minPrice>maxPrice){
+        throw new ApiError(400,"Max Price Should Greater Than Min Price")
+      }
+      price.$lte = maxPrice;
+    }
+    const isPriceEmpty = isEmpty(price);
+    if (!isPriceEmpty) {
+      query.price = price;
+    }
+    console.log(query);
+
+    if (category) {
+      if (!mongoose.isValidObjectId(category)) {
+        throw new ApiError(400, "Invalid category Id in query");
+      }
+      query.category = category;
+    }
+
     if (search?.trim()) {
       query.$or = [
         {
@@ -114,7 +144,9 @@ export const getAll = async (req, res, next) => {
         },
       ];
     }
-    const products = await ProductModel.find(query).populate("category","name").populate("user","name email");
+    const products = await ProductModel.find(query)
+      .populate("category", "name")
+      .populate("user", "name email");
     const totalProducts = await ProductModel.countDocuments(query);
     res.status(200).json({
       success: true,
@@ -253,7 +285,7 @@ export const uploadImage = async (req, res, next) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
       throw new ApiError(400, "invalid prduct id to upload product image");
     }
-    if(!req.files || req.files?.length<=0){
+    if (!req.files || req.files?.length <= 0) {
       throw new ApiError(400, "Give at least one product image");
     }
     const product = await ProductModel.findById(req.params?.id);
@@ -263,12 +295,15 @@ export const uploadImage = async (req, res, next) => {
     if (req.files.length == 0) {
       throw new ApiError(400, "No files for upload");
     }
-    if(product.productimages.length+req.files.length>5){
-      for(const img of req.files){
+    if (product.productimages.length + req.files.length > 5) {
+      for (const img of req.files) {
         // console.log(img)
-        fs.unlinkSync(img.path)
+        fs.unlinkSync(img.path);
       }
-      throw new ApiError(400,`Maximum 5 images can be stored for a product, product already have ${product.productimages.length},you can add ${5-product.productimages.length} images`)
+      throw new ApiError(
+        400,
+        `Maximum 5 images can be stored for a product, product already have ${product.productimages.length},you can add ${5 - product.productimages.length} images`,
+      );
     }
 
     for (let i = 0; i < req.files.length; i++) {
@@ -302,47 +337,44 @@ export const uploadImage = async (req, res, next) => {
   }
 };
 
-
-
-
-
 // ------------------Delete Product Image--------------------
-export const deleteProductImage=async (req,res,next)=>{
+export const deleteProductImage = async (req, res, next) => {
   try {
-    const productId=req.params?.id;
-    const {publicId}=req.body
-    if(!mongoose.isValidObjectId(productId)){
-      throw new ApiError(400,"Invalid product id")
+    const productId = req.params?.id;
+    const { publicId } = req.body;
+    if (!mongoose.isValidObjectId(productId)) {
+      throw new ApiError(400, "Invalid product id");
     }
-    const product=await ProductModel.findById(productId)
-    if(!product){
-      throw new ApiError(404,"product not found")
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      throw new ApiError(404, "product not found");
     }
     // console.log(product.productimages)
-    const productimages=product.productimages
-    const productimageObject= productimages.find(item => item.publicId === publicId)
-    if(!productimageObject){
-      throw new ApiError(404,"Can't find image with provided publicId")
+    const productimages = product.productimages;
+    const productimageObject = productimages.find(
+      (item) => item.publicId === publicId,
+    );
+    if (!productimageObject) {
+      throw new ApiError(404, "Can't find image with provided publicId");
     }
 
-    const result=await deleteFromCludinary(publicId)
-    let rmv=undefined
-    if(result.result==="ok"){
-       rmv=await ProductModel.updateOne(
-      {_id:productId},
-      {$pull:{productimages:{publicId:publicId}}}
-    )
-    rmv=rmv.acknowledged
-    }else{
-      rmv=false
+    const result = await deleteFromCludinary(publicId);
+    let rmv = undefined;
+    if (result.result === "ok") {
+      rmv = await ProductModel.updateOne(
+        { _id: productId },
+        { $pull: { productimages: { publicId: publicId } } },
+      );
+      rmv = rmv.acknowledged;
+    } else {
+      rmv = false;
     }
     res.status(200).json({
-      success:true,
-      Cloudinary_Delete_Status:result.result,
-      Database_delete_status:rmv
-    })
-
+      success: true,
+      Cloudinary_Delete_Status: result.result,
+      Database_delete_status: rmv,
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
