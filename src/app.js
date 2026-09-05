@@ -6,6 +6,7 @@ import { errorHandler } from "./middleware/errorHandler.middleware.js";
 import userRoutes from "./routes/user.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
 import path from "path";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -30,6 +31,7 @@ res.render("home")
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/category", categoryRoutes);
+app.use("/api/v1/cart", cartRoutes);
 app.get('/register',(req,res)=>{
     res.render("register")
 })
