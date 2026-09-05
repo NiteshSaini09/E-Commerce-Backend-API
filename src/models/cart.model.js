@@ -1,5 +1,3 @@
-// import { required } from "joi";
-import { required } from "joi";
 import mongoose from "mongoose";
 const cartSchema = new mongoose.Schema(
   {
@@ -7,10 +5,11 @@ const cartSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      unique:true
     },
     items: [
       {
-        prpduct: {
+        product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
           required: true,
@@ -26,4 +25,4 @@ const cartSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export const CartModal = mongoose.model("Cart", cartSchema);
+export const CartModel = mongoose.model("Cart", cartSchema);
