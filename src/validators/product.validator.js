@@ -43,3 +43,17 @@ export const updateProductSchema = Joi.object({
   productimages: Joi.array().items(Joi.string().trim()).min(1).max(5),
   status: Joi.string().valid("active", "inactive").default("active")
 }).min(1);
+
+export const querySchema=Joi.object({
+  search:Joi.string().trim(),
+  minPrice:Joi.number().min(0),
+  maxPrice:Joi.number(),
+   category: Joi.string().custom((value, helpers) => {
+    if (!mongoose.isValidObjectId(value)) {
+      return helpers.error("any.invalid");
+    }
+    return value;
+  }).messages({
+    "any.invalid": "Invalid category ID",
+  }),
+})

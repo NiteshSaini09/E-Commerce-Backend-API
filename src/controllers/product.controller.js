@@ -94,10 +94,10 @@ export const create = async (req, res, next) => {
 
 export const getAll = async (req, res, next) => {
   try {
-    const search = req.query?.search;
-    const category = req.query?.category;
-    const minPrice = Number(req.query?.minPrice);
-    const maxPrice = Number(req.query?.maxPrice);
+    const search = req.validQuery?.search;
+    const category = req.validQuery?.category;
+    const minPrice = Number(req.validQuery?.minPrice);
+    const maxPrice = Number(req.validQuery?.maxPrice);
     const query = {};
     const price = {};
     if (minPrice>=0) {
