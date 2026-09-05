@@ -105,7 +105,7 @@ export const getAll = async (req, res, next) => {
     }
     if (maxPrice>=0) {
       if(minPrice>maxPrice){
-        throw new ApiError(400,"Max Price Should Greater Than Min Price")
+        throw new ApiError(400,"minPrice should be less than or equal to maxPrice")
       }
       price.$lte = maxPrice;
     }
