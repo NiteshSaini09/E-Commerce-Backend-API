@@ -86,18 +86,20 @@ export const getCart = async (req, res, next) => {
     if (!cart) {
       throw new ApiError(404, "Cart not available, add items in cart");
     }
-    for (let i=0;i<cart.items.length;i++) {
-      const total = Math.ceil(cart.items[i].product.finalprice * cart.items[i].quantity);
-      cart.items[i].Amount=total
-      console.log(cart.items[i].product.name)
-      console.log(total);
+    const cartData=cart.toObject()
+    let TotalCartAmount=0
+    for (let i=0;i<cartData.items.length;i++) {
+      const total = Math.ceil(cartData.items[i].product.finalprice * cartData.items[i].quantity);
+      TotalCartAmount+=total
+      cartData.items[i].Amount=total
     }
+    cartData.TotalAmount=TotalCartAmount
     // console.log(cart.items)
-    const totalProductsInCart = cart.items.length;
+    const totalProductsInCart = cartData.items.length;
     res.status(200).json({
       success: true,
       Total_Products: totalProductsInCart,
-      cart,
+      cart:cartData,
     });
   } catch (error) {
     next(error);
