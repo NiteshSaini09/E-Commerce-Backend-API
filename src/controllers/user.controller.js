@@ -2,10 +2,11 @@ import jwt from "jsonwebtoken";
 import { UserModel } from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import mongoose from "mongoose";
+import sendMail from "../services/gmail.service.js";
 
 export const register = async (req, res, next) => {
   try {
-    res.render("register")
+    // res.render("register")
     const { name, email, password } = req.body;
     const isUserExists = await UserModel.findOne({ email });
     if (isUserExists) {
@@ -18,7 +19,7 @@ export const register = async (req, res, next) => {
     const registeredUser = await UserModel.findById(user?._id).select(
       "-password -createdAt -updatedAt",
     );
-    console.log(registeredUser)
+    await sendMail(email,"Registration Successfull",`This is conformation mail, Thank You ${name} for Registration. your Password :${password}`);
     res.status(201).json({
       success: true,
       message: "registration success",
