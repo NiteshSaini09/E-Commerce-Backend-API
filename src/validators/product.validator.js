@@ -1,4 +1,5 @@
 import Joi from "joi";
+import mongoose from "mongoose";
 export const addProductSchema = Joi.object({
   name: Joi.string().required().min(2).trim(),
   description: Joi.string().trim(),

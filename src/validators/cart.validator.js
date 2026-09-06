@@ -9,5 +9,5 @@ export const addSchema=Joi.object({
   }).messages({
     "any.invalid": "Invalid Product ID",
   }),
-  quantity:Joi.number().min(1).required()
+  quantity:Joi.number().min(1).required().integer()
 })
