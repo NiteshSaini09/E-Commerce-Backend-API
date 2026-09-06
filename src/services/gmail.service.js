@@ -9,12 +9,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 function sendMail(to, subject, text) {
-  // const mailOptions={
-  //     from: process.env.GMAIL_USER,
-  //     to: to,
-  //     subject: subject,
-  //     text: text
-  // }
   return transporter.sendMail({
     from: process.env.GMAIL_USER,
     to: to,
