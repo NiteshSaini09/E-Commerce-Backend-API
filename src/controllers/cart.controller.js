@@ -86,22 +86,107 @@ export const getCart = async (req, res, next) => {
     if (!cart) {
       throw new ApiError(404, "Cart not available, add items in cart");
     }
-    const cartData=cart.toObject()
-    let TotalCartAmount=0
-    for (let i=0;i<cartData.items.length;i++) {
-      const total = Math.ceil(cartData.items[i].product.finalprice * cartData.items[i].quantity);
-      TotalCartAmount+=total
-      cartData.items[i].Amount=total
+    const cartData = cart.toObject();
+    let TotalCartAmount = 0;
+    for (let i = 0; i < cartData.items.length; i++) {
+      const total = Math.ceil(
+        cartData.items[i].product.finalprice * cartData.items[i].quantity,
+      );
+      TotalCartAmount += total;
+      cartData.items[i].Amount = total;
     }
-    cartData.TotalAmount=TotalCartAmount
+    cartData.TotalAmount = TotalCartAmount;
     // console.log(cart.items)
     const totalProductsInCart = cartData.items.length;
     res.status(200).json({
       success: true,
       Total_Products: totalProductsInCart,
-      cart:cartData,
+      cart: cartData,
     });
   } catch (error) {
     next(error);
   }
 };
+
+//---------------------Update Quantity of existing product----------------------
+
+export const updateQantity = async (req, res, next) => {
+  try {
+    const productId = req.body?.productId;
+    let quantity = Number(req.body?.quantity);
+    const user = req.user._id;
+    if (!productId || !quantity) {
+      throw new ApiError(
+        400,
+        "Please provide product id and quantity to update",
+      );
+    }
+    const cart = await CartModel.findOne({ user }).populate(
+      "items.product",
+      "stock name",
+    );
+    if(!cart){
+      throw new ApiError("404","Cart not created, add product to create cart")
+    }
+    let targetItem = undefined;
+    for (let item of cart.items) {
+      if (productId === item.product._id.toString()) {
+        targetItem = item;
+        break;
+      }
+    }
+    if(!targetItem){
+      throw new ApiError(404,"Product not exists in cart")
+    }
+    if(targetItem.quantity+quantity>targetItem.product.stock){
+      throw new ApiError(400,`Not enough stock, The Total stock of product is ${targetItem.product.stock},and you trying to add ${targetItem.quantity+quantity} products`)
+    }
+    if(targetItem.quantity+quantity<1){
+      throw new ApiError(400,`Minimum quantity can be 1, Your Current quantity is ${targetItem.quantity}`)
+    }
+    targetItem.quantity+=quantity
+    await cart.save()
+    return res.status(200).json({
+      success:true,
+      message:"Quantity updated",
+      cart
+    })
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ----------------------Delete Product from cart-------------------------------------------
+export const removeProduct=async (req,res,next)=>{
+  try {
+    const productId=req.body?.productId
+    if(!mongoose.isValidObjectId(productId)){
+      throw new ApiError(401,"Invalid product id")
+    }
+    const cart=await CartModel.findOne({user:req.user?._id})
+    if(!cart){
+      throw new ApiError(404,"Cart not created at, Add products in cart first")
+    }
+    let targetItem=undefined
+    for(let item of cart.items){
+      if(item.product.toString()==productId){
+        targetItem=item
+        break
+      }
+    }
+    if(!targetItem){
+      throw new ApiError(400,"Product not in cart to remove")
+    }
+    cart.items.pull(targetItem)
+    await cart.save()
+    // console.log(targetItem,"product removed")
+    res.status(200).json({
+      success:true,
+      message:"product successfully removed from cart",
+      cart
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+

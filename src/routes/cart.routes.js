@@ -8,5 +8,7 @@ const router=Router()
 
 router.route("/").post(verifyJWT,validate(addSchema),controller.add)
 router.route("/").get(verifyJWT,controller.getCart)
+router.route("/update-uantity").post(verifyJWT,controller.updateQantity)
+router.route("/remove").delete(verifyJWT,controller.removeProduct)
 
 export default router
