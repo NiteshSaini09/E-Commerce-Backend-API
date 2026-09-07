@@ -2,6 +2,7 @@ import ApiError from "../utils/ApiError.js";
 import { ProductModel } from "../models/product.model.js";
 import { CartModel } from "../models/cart.model.js";
 import mongoose from "mongoose";
+import isEmpty from "../utils/isObjectEmpty.js";
 
 // ----------------------Add To Cart------------------------------------------------
 
@@ -82,9 +83,26 @@ export const getCart = async (req, res, next) => {
   try {
     const cart = await CartModel.findOne({ user: req.user?._id })
       .select("-_id -user -items._id")
-      .populate("items.product", "name price brand discount finalprice");
+      .populate("items.product", "name price brand discount finalprice status");
     if (!cart) {
       throw new ApiError(404, "Cart not available, add items in cart");
+    }
+    let cartReport={}
+    for(let item of cart.items){
+      const isProductExists=await ProductModel.findById(item.product)
+      if(!isProductExists){
+        cartReport.productNotExists=`Product-${item.product.name} not exists now`
+      }
+      if(item.product.status=="inactive"){
+        cartReport.productIsInactive=`Product-${item.product.name} is inactive now`
+      }
+      if(isProductExists && item.product.stock<item.quantity){
+        cartReport.stockChange=`Stocks of product-${item.product.name} now is ${item.product.stock}`
+      }      
+    }
+    const isReportEmpty=isEmpty(cartReport)
+    if(isReportEmpty){
+      cartReport.status="ok"
     }
     const cartData = cart.toObject();
     let TotalCartAmount = 0;
@@ -102,6 +120,7 @@ export const getCart = async (req, res, next) => {
       success: true,
       Total_Products: totalProductsInCart,
       cart: cartData,
+      cartReport
     });
   } catch (error) {
     next(error);
