@@ -1,13 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
-</head>
-<body>
-    <h1>Hello World!</h1>
-    <button>Follow</button>
+  </head>
+  <body>
+    <h4><%= data.username %></h4>
+    <p>
+    <% if(data.username.toUpperCase()=="NITESH"){ %>
+        <h1>Welcome, You Are Admin </h1>
+    <% } else{ %>
+        <h1>Welcome <%= data.username %></h1>
+    <% } %>
+
+    <h3>Follower list:</h3>
+    <ol>
+        <% for(let name of followers){ %>
+            <li> <%= name %> </li>
+        <% } %>
+    </ol>
+    </p>
+    <p>posts:<%= data.posts %></p>
+    <p>followers:<%= data.followers %></p>
+    <p>following:<%= data.following %></p>
+    <button name="follow">Follow</button>
     <button>Message</button>
-</body>
+  </body>
 </html>

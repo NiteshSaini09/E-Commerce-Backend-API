@@ -7,6 +7,9 @@ import  verifyAdmin  from "../middleware/admin.middleware.js";
 const router=Router()
 
 router.route('/register').post(validate(registerSchema),userController.register)
+router.get("/register",(req,res)=>{
+    res.render("register")
+})
 router.route('/login').post(validate(loginSchema),userController.login)
 router.route('/profile').get(verifyJWT,userController.profile)
 router.route('/log-out').get(verifyJWT,userController.logOut)

@@ -6,7 +6,6 @@ import sendMail from "../services/gmail.service.js";
 
 export const register = async (req, res, next) => {
   try {
-    // res.render("register")
     const { name, email, password } = req.body;
     const isUserExists = await UserModel.findOne({ email });
     if (isUserExists) {
@@ -22,7 +21,7 @@ export const register = async (req, res, next) => {
     await sendMail(email,"Registration Successfull",`This is conformation mail, Thank You ${name} for Registration. your Password :${password}`);
     res.status(201).json({
       success: true,
-      message: "registration success",
+      message: `Registration Success, We sent an email on ${email}`,
       registeredUser,
     });
   } catch (error) {

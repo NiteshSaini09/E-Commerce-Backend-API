@@ -1,68 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register</title>
     <style>
-        *{
-            margin: 0;
-            padding: 0;
-            font-family: monospace;
-            box-sizing: border-box;
-        }
-        body{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        form{
-            
-            height: 40vh;
-            margin-top: 30vh;
-            width: 20vw;
-            /* padding: 50px;
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: monospace;
+        box-sizing: border-box;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      form {
+        height: 250px;
+        /* margin-top: 30vh; */
+        width: 20vw;
+        /* padding: 50px;
             margin: 30px; */
-            /* border: 1px solid; */
-            gap: 20px;
-            align-items: center;
-            justify-content: center;
-            display: flex;
-            flex-direction: column;
-        }
-        input{
-            width: 80%;
-            height: 40px;
-            /* border: 1px solid; */
-            border: none;
-            padding-left: 20px;
-            border-radius: 5px;
-            box-shadow: 1px 1px 5px 1px rgb(0, 0, 0);
-        }
-        input:focus{
-            border: none;
-            outline: none;
-        }
-        button{
-            width: 30%;
-            height: 40px;
-            border: none;
-            border-radius: 5px;
-            background-color: maroon;
-            color: white;
-            font-weight: bold;
-            font-family:cursive;
-            box-shadow: 1px 1px 20px 1px maroon;
-        }
+        /* border: 1px solid; */
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+      }
+      input {
+        width: 80%;
+        height: 40px;
+        /* border: 1px solid; */
+        border: none;
+        padding-left: 20px;
+        border-radius: 5px;
+        box-shadow: 1px 1px 5px 1px rgb(0, 0, 0);
+      }
+      input:focus {
+        border: none;
+        outline: none;
+      }
+      button {
+        width: 30%;
+        height: 40px;
+        border: none;
+        border-radius: 5px;
+        background-color: maroon;
+        color: white;
+        font-weight: bold;
+        font-family: cursive;
+        box-shadow: 1px 1px 20px 1px maroon;
+      }
+      h3{
+        margin-top: 300px;
+        margin-bottom: 20px;
+      }
+      #loadingOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loader {
+    font-size: 20px;
+    font-weight: bold;
+}
     </style>
-</head>
-<body>
-    <form action="/api/v1/user/register" method="post" autocomplete="off">
-        <input type="text" name="name" placeholder="Enter Your Name">
-        <input type="text" name="email" placeholder="Enter your eMail">
-        <input type="text" name="role" placeholder="Role: User or Admin">
-        <input type="password" name="password" placeholder="password">
-        <button type="submit">Register</button>
+  </head>
+  <body>
+    <div id="loadingOverlay">
+    <div class="loader">Submitting...</div>
+</div>
+    <h3 id="message"></h3>
+    <form action="/register" method="post" autocomplete="off" id="form">
+      <input type="text" name="name" placeholder="Enter Your Name" />
+      <input type="text" name="email" placeholder="Enter your eMail" />
+      <input type="text" name="role" placeholder="Role: User or Admin" />
+      <input type="password" name="password" placeholder="password" />
+      <button type="submit">Register</button>
     </form>
-</body>
+
+    <script>
+      let form = document.getElementById("form");
+      let message = document.getElementById("message");
+      const overlay = document.getElementById("loadingOverlay");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        overlay.style.display = "flex";
+
+        let formData = new FormData(form);
+        let data = Object.fromEntries(formData);
+
+        try {
+          const res = await fetch("/api/v1/user/register", {
+            method: "POST",
+            headers: { "Content-Type": "Application/json" },
+            body: JSON.stringify(data),
+          });
+          const result=await res.json()
+          console.log(res)
+          message.innerHTML=result.message
+          console.log("register success")
+          window.location.href = "/";    //redirect to another page
+        } catch (error) {
+            message.innerHTML=error.message
+        }finally{
+            overlay.style.display = "none";
+        }
+      });
+    </script>
+  </body>
 </html>

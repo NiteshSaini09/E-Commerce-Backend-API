@@ -26,8 +26,19 @@ app.get("/", (req, res) => {
 //   console.log(path)
 //   console.log(path.join(__dirname, 'views'))
 //   res.send("e commerse app is running");
-res.render("home")
+const data={
+    username:"nitesh saini",
+    posts:20,
+    followers:3,
+    following:32
+}
+const followers=["Amit","Vishal","Mohit"]
+// const ap=12
+res.render("home.ejs",{data,followers})
 });
+app.get('/learn',(req,res)=>{
+    res.render("learnEJS")
+})
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/category", categoryRoutes);

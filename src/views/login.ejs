@@ -1,15 +1,72 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Log-in</title>
-</head>
-<body>
-    <form action="/login">
-        <input type="text" name="email" placeholder="email">
-        <input type="password" name="password" placeholder="password">
-        <button type="submit">Login</button>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: monospace;
+        box-sizing: border-box;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      form {
+        height: 40vh;
+        margin-top: 30vh;
+        width: 20vw;
+        /* padding: 50px;
+            margin: 30px; */
+        /* border: 1px solid; */
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+      }
+      input {
+        width: 80%;
+        height: 40px;
+        /* border: 1px solid; */
+        border: none;
+        padding-left: 20px;
+        border-radius: 5px;
+        box-shadow: 1px 1px 5px 1px rgb(0, 0, 0);
+      }
+      input:focus {
+        border: none;
+        outline: none;
+      }
+      button {
+        width: 30%;
+        height: 40px;
+        border: none;
+        border-radius: 5px;
+        background-color: rgb(7, 72, 223);
+        color: white;
+        font-weight: bold;
+        font-family: cursive;
+        box-shadow: 1px 1px 20px 1px rgb(7, 72, 223);
+      }
+      button:hover{
+        color: black;
+        font-weight: bold;
+        font-family: cursive;
+        background-color: rgb(5, 61, 189);
+        box-shadow: 1px 1px 20px 1px rgb(2, 56, 183);
+      }
+    </style>
+  </head>
+  <body>
+    <form action="/login" autocomplete="off">
+      <input type="text" name="email" placeholder="email" />
+      <input type="password" name="password" placeholder="password" />
+      <button type="submit">Login</button>
     </form>
-</body>
+  </body>
 </html>
