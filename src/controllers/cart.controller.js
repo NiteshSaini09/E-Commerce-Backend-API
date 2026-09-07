@@ -190,3 +190,23 @@ export const removeProduct=async (req,res,next)=>{
   }
 }
 
+
+// -----------------------Clear Caart--------------------
+
+export const clearCart=async(req,res,next)=>{
+  try {
+    const cart=await CartModel.findOne({user:req.user?._id})
+    if(!cart){
+      throw new ApiError(400,"There is no cart to clrear")
+    }
+    cart.items.length=0
+    await cart.save()
+    res.status(200).json({
+      success:true,
+      message:"Cart cleared successfully",
+      cart
+    })
+  } catch (error) {
+    next(error)
+  }
+}

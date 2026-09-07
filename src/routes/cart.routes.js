@@ -10,5 +10,6 @@ router.route("/").post(verifyJWT,validate(addSchema),controller.add)
 router.route("/").get(verifyJWT,controller.getCart)
 router.route("/update-uantity").post(verifyJWT,controller.updateQantity)
 router.route("/remove").delete(verifyJWT,controller.removeProduct)
+router.route("/clear").get(verifyJWT,controller.clearCart)
 
 export default router
