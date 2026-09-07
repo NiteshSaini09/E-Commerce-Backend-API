@@ -199,6 +199,9 @@ export const clearCart=async(req,res,next)=>{
     if(!cart){
       throw new ApiError(400,"There is no cart to clrear")
     }
+    if(cart.items.length==0){
+      throw new ApiError(400,"Cart is already clear")
+    }
     cart.items.length=0
     await cart.save()
     res.status(200).json({
