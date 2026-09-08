@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shree MotiKana</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family:
+          "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+      }
+      header {
+        height: 30px;
+        border: 1px solid;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .hero {
+        border: 1px solid;
+        display: flex;
+        flex-direction: column;
+        height: 96vh;
+        padding-top: 10px;
+      }
+      .hero h2 {
+        margin-left: 150px;
+      }
+      .hero button{
+        height: 60px;
+        width: 100px;
+        margin-left: 150px;
+      }
+      h2:hover{
+        cursor: pointer;
+      }
+      .product-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-left: 150px;
+        margin-right: 150px;
+        margin-top: 40px;
+      }
+      .product {
+        height: 400px;
+        min-width: 270px;
+        max-width: 250px;
+        border: 1px solid;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        overflow: hidden;
+      }
+      .product-cover-image {
+        height: 70%;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      img{
+        height: 100%;
+        width: 100%;
+      }
+      .product-details {
+        font-size: 14px;
+        padding-left: 10px;
+      }
+      .product-brand {
+        color: rgb(148, 147, 147);
+        font-size: 16px;
+      }
+      .product-description {
+        color: rgb(179, 179, 179);
+      }
+      .product-name {
+        font-size: 18px;
+        /* font-weight: bold; */
+        /* color: ; */
+      }
+      .priceing{
+        display: flex;
+        margin-top: 10px;
+        gap: 5px;
+        align-items: baseline;
+      }
+      .product-finalprice{
+        font-size: 19px;
+        font-weight: bold;
+      }
+      .product-price{
+        text-decoration: line-through;
+      }
+      .product-discount{
+        font-size: 15px;
+        color: green;
+
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h5>Hello,<font style="color: red; font-size: 17px;"> <%= products[0].user.name %> </font> To MotiKana</h5>
+    </header>
+    <div class="hero">
+      <button id="pr">Go To Home</button>
+      <h2>Products</h2>
+      <div class="product-container">
+        <% for(let product of products){%>  
+          <div class="product">
+          <div class="product-cover-image">
+            <img src="<%= product.productimages[0].publicURL %>" alt="This is demo image" />
+          </div>
+          <hr />
+          <div class="product-details">
+            <p class="product-brand"><%= product.brand %></p>
+            <p class="product-description"><%= product.discription %></p>
+            <p class="product-name"><%= product.name %></p>
+            <div class="priceing">
+                <p class="product-finalprice">&#8377;<%= product.finalprice %></p>
+              <p class="product-price"><%= product.price %></p>
+              <p class="product-discount"><%= product.discount %>% off</p>
+            </div>
+          </div>
+        </div>
+          
+        <% }%>
+      </div>
+    </div>
+    <script>
+      const product=document.getElementById("pr")
+      product.addEventListener("click",()=>{
+        window.location.href = "/";
+      })
+    </script>
+  </body>
+</html>

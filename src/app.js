@@ -47,7 +47,11 @@ app.use("/api/v1/cart", cartRoutes);
 app.get('/register',(req,res)=>{
     res.render("register")
 })
-
+app.get("/store",async(req,res)=>{
+    let products=await ProductModel.find({status:"active"}).populate("user","name")
+    // console.log(products)
+    res.render("productList",{products})
+})
 
 app.use(errorHandler);
 export { app };
