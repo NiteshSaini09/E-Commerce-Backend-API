@@ -10,6 +10,7 @@ import cartRoutes from "./routes/cart.routes.js";
 import path from "path";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { ProductModel } from "./models/product.model.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
@@ -46,6 +47,7 @@ app.use("/api/v1/cart", cartRoutes);
 app.get('/register',(req,res)=>{
     res.render("register")
 })
+
 
 app.use(errorHandler);
 export { app };
