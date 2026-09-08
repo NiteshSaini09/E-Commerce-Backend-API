@@ -235,3 +235,60 @@ export const clearCart=async(req,res,next)=>{
   }
 }
 
+
+
+
+// ---------------------------------check out-----------------------------------------
+
+export const checkOut=async (req,res,next)=>{
+  try {
+    
+    const realCart=await CartModel.findOne({user:req.user?._id}).populate("items.product","name price stock finalprice stock status")
+    let cart
+    if(realCart){
+      cart=realCart.toObject()
+    }
+    if(!cart){
+      throw new ApiError(404,"Cart not exists")
+    }
+    if(cart.items.length==0){
+      throw new ApiError(400,"Cart is empty")
+    }
+    let productNumber=1
+    let subtotal=0
+    let itemCount=0
+    for(let item of cart.items){
+      
+      if(item.product==null){
+        throw new ApiError(400,`Product ${productNumber} is no more exists,Please remove it from cart`)
+      }
+      if(item.product.status=='inactive'){
+        throw new ApiError(400,`${item.product.name} is inactive at this time`)
+      }
+      if(item.product.stock==0){
+        throw new ApiError(400,`${item.product.name} is out of stock`)
+      }
+      if(item.product.stock<item.quantity){ 
+        throw new ApiError(400,`Only ${item.product.stock} ${item.product.name} left, Please reduce quantity`)
+      }
+      
+      let itemTotel=item.product.finalprice*item.quantity
+      item.total=itemTotel
+      subtotal+=item.total
+      itemCount+=item.quantity
+      productNumber++
+    }
+    console.log(cart)
+    return res.status(200).json({
+      success:true,
+      checkout:{
+        items:cart.items,
+        subtotal,
+        itemCount,
+        isValid:true
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+}
