@@ -82,7 +82,7 @@ export const add = async (req, res, next) => {
 export const getCart = async (req, res, next) => {
   try {
     const cart = await CartModel.findOne({ user: req.user?._id })
-      .select("-_id -user -items._id")
+      .select("-_id -user")
       .populate("items.product", "name price brand discount finalprice status stock");
     if (!cart) {
       throw new ApiError(404, "Cart not available, add items in cart");
@@ -105,23 +105,25 @@ export const getCart = async (req, res, next) => {
     if(cartReport.issues.length==0){
       cartReport.status="ok"
     }
-    const cartData = cart.toObject();
-    // console.log(cartData)
-    let TotalCartAmount ;
-    for (let i = 0; i < cartData.items.length; i++) {
+    const cartCopy = cart.toObject();
+    // console.log(cartCopy.items)
+    let subTotal =0;
+    for (let cartCopyItem of cartCopy.items) {
       const total = Math.ceil(
-        cartData.items[i].product.finalprice * cartData.items[i].quantity,
+        cartCopyItem.product.finalprice * cartCopyItem.quantity,
       );
-      TotalCartAmount += total;
-      cartData.items[i].Amount = total;
+      subTotal += total;
+      cartCopyItem.total = total;
     }
-    cartData.TotalAmount = TotalCartAmount;
+    // console.log(subTotal)
+    // cartCopy.subTotal = subTotal;
     // console.log(cart.items)
-    const totalProductsInCart = cartData.items.length;
+    const totalProductsInCart = cartCopy.items.length;
     res.status(200).json({
       success: true,
       Total_Products: totalProductsInCart,
-      cart: cartData,
+      cart: cartCopy,
+      subTotal,
       cartReport
     });
   } catch (error) {

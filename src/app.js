@@ -11,6 +11,7 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { ProductModel } from "./models/product.model.js";
+import orderRoutes from "./routes/order.routes.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
@@ -44,11 +45,12 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/cart", cartRoutes);
+app.use("/api/v1/order", orderRoutes);
 app.get('/register',(req,res)=>{
     res.render("register")
 })
 app.get("/store",async(req,res)=>{
-    let products=await ProductModel.find({status:"active"}).populate("user","name")
+    let products=await ProductModel.find().populate("user","name")
     // console.log(products)
     res.render("productList",{products})
 })
