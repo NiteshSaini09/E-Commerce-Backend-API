@@ -83,29 +83,31 @@ export const getCart = async (req, res, next) => {
   try {
     const cart = await CartModel.findOne({ user: req.user?._id })
       .select("-_id -user -items._id")
-      .populate("items.product", "name price brand discount finalprice status");
+      .populate("items.product", "name price brand discount finalprice status stock");
     if (!cart) {
       throw new ApiError(404, "Cart not available, add items in cart");
     }
-    let cartReport={}
+    let cartReport={
+      issues:[],
+    }
     for(let item of cart.items){
-      const isProductExists=await ProductModel.findById(item.product)
-      if(!isProductExists){
-        cartReport.productNotExists=`Product-${item.product.name} not exists now`
+      // const isProductExists=await ProductModel.findById(item.product._id)
+      if(item.product==null){
+        cartReport.issues.push(`Product not exists now`)
       }
-      if(item.product.status=="inactive"){
-        cartReport.productIsInactive=`Product-${item.product.name} is inactive now`
+      if(item.product!==null && item.product.status=="inactive"){
+        cartReport.issues.push(`Product-${item.product.name} is inactive now`)
       }
-      if(isProductExists && item.product.stock<item.quantity){
-        cartReport.stockChange=`Stocks of product-${item.product.name} now is ${item.product.stock}`
+      if(item.product!==null && item.product.stock<item.quantity){
+        cartReport.issues.push(`Stocks of product-${item.product.name} now is ${item.product.stock}`)
       }      
     }
-    const isReportEmpty=isEmpty(cartReport)
-    if(isReportEmpty){
+    if(cartReport.issues.length==0){
       cartReport.status="ok"
     }
     const cartData = cart.toObject();
-    let TotalCartAmount = 0;
+    // console.log(cartData)
+    let TotalCartAmount ;
     for (let i = 0; i < cartData.items.length; i++) {
       const total = Math.ceil(
         cartData.items[i].product.finalprice * cartData.items[i].quantity,
@@ -232,3 +234,4 @@ export const clearCart=async(req,res,next)=>{
     next(error)
   }
 }
+

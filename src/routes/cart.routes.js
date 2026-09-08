@@ -11,5 +11,6 @@ router.route("/").get(verifyJWT,controller.getCart)
 router.route("/update-uantity").post(verifyJWT,controller.updateQantity)
 router.route("/remove").delete(verifyJWT,controller.removeProduct)
 router.route("/clear").delete(verifyJWT,controller.clearCart)
+router.route("/checkout").get(verifyJWT,controller.checkOut)
 
 export default router
