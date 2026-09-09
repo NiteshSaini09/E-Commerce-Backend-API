@@ -93,9 +93,10 @@ const orderSchema = new mongoose.Schema(
             "processing",
             "shipped",
             "delivered",
-            "canceled"
+            "cancelled"
         ],
-        default:"pending"
+        default:"pending",
+        lowerCase:true
     },
     paymentStatus:{
         type:String,
