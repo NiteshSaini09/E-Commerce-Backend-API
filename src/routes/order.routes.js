@@ -8,6 +8,7 @@ const router =Router()
 router.route('/').post(verifyJWT,validate(shippingAddressSchema),controller.makeOrder)
 router.route('/my-orders').get(verifyJWT,controller.myOrders)
 router.route('/my-orders/:orderId').get(verifyJWT,controller.myOrderById)
+router.route('/my-orders/:orderId/cancle').patch(verifyJWT,controller.cancelOrder)
 
 
 export default router
