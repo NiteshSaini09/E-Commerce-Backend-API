@@ -90,10 +90,11 @@ export const getCart = async (req, res, next) => {
     let cartReport={
       issues:[],
     }
+    let productNumber=1
     for(let item of cart.items){
       // const isProductExists=await ProductModel.findById(item.product._id)
       if(item.product==null){
-        cartReport.issues.push(`Product not exists now`)
+        cartReport.issues.push(`Product No.${productNumber} not exists now`)
       }
       if(item.product!==null && item.product.status=="inactive"){
         cartReport.issues.push(`Product-${item.product.name} is inactive now`)
@@ -101,6 +102,7 @@ export const getCart = async (req, res, next) => {
       if(item.product!==null && item.product.stock<item.quantity){
         cartReport.issues.push(`Stocks of product-${item.product.name} now is ${item.product.stock}`)
       }      
+      productNumber++
     }
     if(cartReport.issues.length==0){
       cartReport.status="ok"
@@ -108,12 +110,18 @@ export const getCart = async (req, res, next) => {
     const cartCopy = cart.toObject();
     // console.log(cartCopy.items)
     let subTotal =0;
+    productNumber=1
     for (let cartCopyItem of cartCopy.items) {
+      if(cartCopyItem.product==null){
+        console.log(`Can't calclulate product No.${productNumber} finalPrice`)
+        continue;
+      }
       const total = Math.ceil(
         cartCopyItem.product.finalprice * cartCopyItem.quantity,
       );
       subTotal += total;
       cartCopyItem.total = total;
+      productNumber++
     }
     // console.log(subTotal)
     // cartCopy.subTotal = subTotal;

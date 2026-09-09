@@ -28,7 +28,7 @@ export const makeOrder=async(req,res,next)=>{
                 throw new ApiError(400,`${item.product.name} is not active to make order,Please remove it from cart`)
             }
             if(item.product.stock< item.quantity){
-                throw new ApiError(400,`Not enouth stock, Only ${item.product.stock} ${item.product.name} is in stock, please reduce quantity`)
+                throw new ApiError(400,`Not enough stock, Only ${item.product.stock} ${item.product.name} is in stock, please reduce quantity`)
             }
             item.total=item.product.finalprice*item.quantity
             // console.log(item)
@@ -72,7 +72,7 @@ export const makeOrder=async(req,res,next)=>{
         res.status(201).json({
             success:true,
             message,
-            orderSummery:order
+            orderSummary:order
         })
 
     } catch (error) {

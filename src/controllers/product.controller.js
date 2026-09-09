@@ -114,9 +114,9 @@ export const getAll = async (req, res, next) => {
         sortOrder = order == "newest" ? -1 : 1;
         sortBy = "createdAt";
       }
-     if( sortBy!=undefined &&sortOrder!=undefined){
-       sort[sortBy] = sortOrder;
-     }
+      if (sortBy != undefined && sortOrder != undefined) {
+        sort[sortBy] = sortOrder;
+      }
     }
 
     const query = {};
@@ -252,7 +252,14 @@ export const updateProduct = async (req, res, next) => {
     if (stock === 0) {
       data.stock = stock;
     }
-    if (category) data.category = category;
+    if (category) {
+      const productCategory = await CategoryModel.findOne({ name: category.toLowerCase() });
+      if (productCategory) {
+        data.category = productCategory._id;
+      } else {
+        throw new ApiError(400, "Category not available");
+      }
+    }
     if (status) data.status = status;
     if (discount >= 0 && price) {
       const finalPrice = price - (price * discount) / 100;

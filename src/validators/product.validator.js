@@ -30,17 +30,7 @@ export const updateProductSchema = Joi.object({
   price: Joi.number().min(1).optional(),
   discount: Joi.number().min(0).max(100).optional(),
   stock: Joi.number().optional(),
-  category: Joi.string()
-    .valid(
-      "cloth",
-      "item",
-      "shoes",
-      "mobile",
-      "laptop",
-      "electronics",
-      "beauty",
-      "furniture",
-    ).default("item").optional(),
+  category: Joi.string().optional(),
   productimages: Joi.array().items(Joi.string().trim()).min(1).max(5),
   status: Joi.string().valid("active", "inactive").default("active")
 }).min(1);
