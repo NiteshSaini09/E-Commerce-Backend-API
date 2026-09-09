@@ -6,6 +6,7 @@ import { shippingAddressSchema } from "../validators/order.validator.js";
 const router =Router()
 
 router.route('/').post(verifyJWT,validate(shippingAddressSchema),controller.makeOrder)
+router.route('/my-orders').get(verifyJWT,controller.myOrders)
 
 
 

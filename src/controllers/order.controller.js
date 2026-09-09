@@ -3,6 +3,9 @@ import { OrderModel } from "../models/order.model.js"
 import { ProductModel } from "../models/product.model.js"
 import ApiError from "../utils/ApiError.js"
 
+
+// ---------------------------------Make Order--------------------------------------------------------------------
+
 export const makeOrder=async(req,res,next)=>{
     try {
         const realCart=await CartModel.findOne({user:req.user?._id}).populate("items.product","name stock price finalprice status")
@@ -75,6 +78,34 @@ export const makeOrder=async(req,res,next)=>{
             orderSummary:order
         })
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+// ---------------------------------------------------------My Orders----------------------------------------------------------------
+
+export const myOrders=async(req,res,next)=>{
+    try {
+        const myOrders=await OrderModel.find({user:req.user._id}).sort({createdAt:-1}).populate("orderItems.product","-price")
+        const pendingOrders=await OrderModel.find({user:req.user._id,orderStatus:"pending"})
+        const deliveredOrders=await OrderModel.find({user:req.user._id,orderStatus:"delivered"})
+        const canceledOrders=await OrderModel.find({user:req.user._id,orderStatus:"canceled"})
+        // console.log(myOrders)
+        let message
+        if(myOrders.length==0){
+            message="No Order history"
+        }else{
+            message="Your Order history available"
+        }
+        res.status(200).json({
+            message,
+            total_Orders:myOrders.length,
+            pending_Orders:pendingOrders.length,
+            delivered_Orders:deliveredOrders.length,
+            canceled_Orders:canceledOrders.length,
+            order_History:myOrders
+        })
     } catch (error) {
         next(error)
     }
