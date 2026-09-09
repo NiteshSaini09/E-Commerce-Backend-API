@@ -80,9 +80,6 @@ export const profile = async (req, res, next) => {
   }
 };
 
-export const adminPannel = async (req, res, next) => {
-  res.send("I am admin");
-};
 
 export const logOut = async (req, res, next) => {
   try {
