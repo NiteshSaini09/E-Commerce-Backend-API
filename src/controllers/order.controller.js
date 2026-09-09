@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import { CartModel } from "../models/cart.model.js"
 import { OrderModel } from "../models/order.model.js"
 import { ProductModel } from "../models/product.model.js"
@@ -106,6 +107,28 @@ export const myOrders=async(req,res,next)=>{
             canceled_Orders:canceledOrders.length,
             order_History:myOrders
         })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// ---------------------------------------------------------My Order By Id-------------------------------------------
+
+export const myOrderById=async(req,res,next)=>{
+    try {
+       const orderId=req.params?.orderId
+       if(!mongoose.isValidObjectId(orderId)){
+        throw new ApiError(400,"Invalid order id")
+       } 
+       const order=await OrderModel.findOne({user:req.user._id,_id:orderId}).populate("orderItems.product","-price")
+       if(!order){
+        throw new ApiError(404,"Order Not Found")
+       }
+       res.status(200).json({
+        success:true,
+        message:"Order retrived successfull",
+        order
+       })
     } catch (error) {
         next(error)
     }
