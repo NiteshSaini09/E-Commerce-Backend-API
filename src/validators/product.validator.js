@@ -52,3 +52,9 @@ export const querySchema=Joi.object({
     "any.invalid": "Invalid category ID",
   }),
 })
+
+
+export const reviewProductSchema=Joi.object({
+  rating:Joi.number().required().min(1).max(5),
+  comment:Joi.string().required().trim().max(500),
+})

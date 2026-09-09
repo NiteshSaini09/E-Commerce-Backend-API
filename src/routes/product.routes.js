@@ -6,7 +6,8 @@ import validate from "../middleware/validate.middleware.js";
 import {
   addProductSchema,
   updateProductSchema,
-  querySchema
+  querySchema,
+  reviewProductSchema
 } from "../validators/product.validator.js";
 import  upload  from "../middleware/multer.middleware.js";
 import { ProductModel } from "../models/product.model.js";
@@ -19,5 +20,6 @@ router.route("/:id").patch(verifyJWT,verifyAdmin,validate(updateProductSchema),p
 router.route("/:id").delete(verifyJWT, verifyAdmin, productController.deleteProduct);
 router.route("/:id/images").post(verifyJWT,verifyAdmin,upload.array("productImages",5),productController.uploadImage)
 router.route("/:id/images").delete(verifyJWT, verifyAdmin, productController.deleteProductImage);
+router.route("/:productId/reviews").post(verifyJWT,validate(reviewProductSchema), productController.reviewProduct);
 
 export default router;

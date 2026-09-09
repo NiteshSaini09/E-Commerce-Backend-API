@@ -8,6 +8,8 @@ import {
 import fs from "fs";
 import { CategoryModel } from "../models/category.model.js";
 import isEmpty from "../utils/isObjectEmpty.js";
+import { OrderModel } from "../models/order.model.js";
+import { ReviewModel } from "../models/reviews.model.js";
 
 // ----------Create product-----------------
 
@@ -378,7 +380,9 @@ export const uploadImage = async (req, res, next) => {
   }
 };
 
+
 // ------------------Delete Product Image--------------------
+
 export const deleteProductImage = async (req, res, next) => {
   try {
     const productId = req.params?.id;
@@ -419,3 +423,65 @@ export const deleteProductImage = async (req, res, next) => {
     next(error);
   }
 };
+
+
+// -------------------------------------Review Product-----------------------------------
+
+export const reviewProduct=async(req,res,next)=>{
+  try {
+    const productId=req.params.productId
+    const comment=req.body?.comment
+    const rating=req.body?.rating
+    if(!mongoose.isValidObjectId(productId)){
+      throw new ApiError(400,"invalid product id")
+    }
+    const product=await ProductModel.findById(productId)
+    if(!product){
+      throw new ApiError(404,"Product does not exists to rate")
+    }
+    if(product.status!=="active"){
+      throw new ApiError(400,"can't rate this product because product not active")
+    }
+
+    const orders=await OrderModel.find({user:req.user._id,orderStatus:"delivered"})
+    if(orders.length==0){
+      throw new ApiError(400,"Buy product to rate")
+    }
+    // console.log(orders)
+    let productPurchaseStatus=false
+    for(let order of orders){
+      for(let orderItem of order.orderItems){
+        // console.log(orderItem.product===productId,orderItem.product.toString(),productId)
+        if(orderItem.product.toString()===productId){
+          productPurchaseStatus=true
+          break;
+        }
+      }
+      if(productPurchaseStatus){
+        break;
+      }
+    }
+    if(!productPurchaseStatus){
+      throw new ApiError(400,"Buy product to rate")
+    }
+
+    const alreadyReviewStatus=await ReviewModel.findOne({user:req.user._id,product:productId})
+    if(alreadyReviewStatus){
+      throw new ApiError(400,"Your review already submited")
+    }
+    const review=await ReviewModel.create({
+      user:req.user._id,
+      product:productId,
+      rating,
+      comment
+    })
+    res.status(200).json({
+      success:true,
+      message:"Review submitted successfully",
+      review
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
