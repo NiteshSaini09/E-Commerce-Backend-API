@@ -485,3 +485,30 @@ export const reviewProduct=async(req,res,next)=>{
     next(error)
   }
 }
+
+// -----------------------------------Get all reviews of a product-----------------------------------
+
+export const getReviews=async(req,res,next)=>{
+  try {
+    const productId=req.params.productId 
+    if(!mongoose.isValidObjectId(productId)){
+      throw new ApiError(400,"invalid product id")
+    }
+    const product=await ProductModel.findById(productId)
+    if(!product){
+      throw new ApiError(404,"Product does not exists to get reviews")
+    }
+    const reviews=await ReviewModel.find({product:productId}).populate("user","name")
+    const totalReviews=reviews.length
+    const averageRating=totalReviews>0?reviews.reduce((acc,review)=>acc+review.rating,0)/totalReviews:0
+    res.status(200).json({
+      success:true,
+      message:"Reviews retrived successfully",
+      reviews,
+      totalReviews,
+      averageRating
+    })
+  } catch (error) {
+    next(error)
+  }
+}
