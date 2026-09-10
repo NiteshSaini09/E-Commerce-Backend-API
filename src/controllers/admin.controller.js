@@ -100,3 +100,21 @@ export const getReviews=async (_,res,next)=>{
 
 // -------------------------------------delete review -----------------------------------------
 
+export const deleteReview=async(req,res,next)=>{
+  try {
+    if(!mongoose.isValidObjectId(req.params.id)){
+      throw new ApiError(400,"invalid review id")
+    }
+    const deletedReview=await ReviewModel.findByIdAndDelete(req.params.id)
+    if(!deletedReview){
+      throw new ApiError(400,"Can't find review to delete")
+    }
+    res.status(200).json({
+      success:true,
+      message:"Review deleted successfully",
+      deletedReview
+    })
+  } catch (error) {
+    next(error)
+  }
+}
