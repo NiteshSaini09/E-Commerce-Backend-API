@@ -207,9 +207,17 @@ export const getProduct = async (req, res, next) => {
     if (!product) {
       throw new ApiError(404, "Product not found");
     }
+    const rating={}
+    const reviews= await ReviewModel.find({product:id})
+    const totalReviews=reviews.length
+    const averageRating=totalReviews > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews: 0;
+    rating.average=averageRating
+    rating.totalReviews=totalReviews
+    console.log(reviews)
     res.status(200).json({
       success: true,
       message: "Product retrived",
+      rating,
       product,
     });
   } catch (error) {
