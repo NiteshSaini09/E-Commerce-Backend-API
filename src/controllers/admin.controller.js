@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { OrderModel } from "../models/order.model.js";
 import ApiError from "../utils/ApiError.js";
+import { ReviewModel } from "../models/reviews.model.js";
 
 
 // -------------------------------------------------------------Get all orders by Admin Only--------------------------------------------
@@ -79,3 +80,23 @@ export const updateOrderStatus=async(req,res,next)=>{
         next(error)
     }
 }
+
+// ---------------------------------------------------------get all reviews----------------------------------------------
+
+export const getReviews=async (_,res,next)=>{
+  try {
+    const reviews=await ReviewModel.find().populate("user product","name brand").sort({createdAt:-1})
+    const totalReviews=reviews.length
+    res.status(200).json({
+      success :true,
+      message:"Reviews retrived successfully",
+      totalReviews,
+      reviews
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+// -------------------------------------delete review -----------------------------------------
+

@@ -6,6 +6,6 @@ const router=Router()
 
 router.route("/orders").get(verifyJWT,verifyAdmin,controller.getOrders)
 router.route("/orders/:orderId/state").patch(verifyJWT,verifyAdmin,controller.updateOrderStatus)
-
+router.route("/reviews").get(verifyJWT,verifyAdmin,controller.getReviews)
 
 export default router
