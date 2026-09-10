@@ -170,54 +170,54 @@ export const getAll = async (req, res, next) => {
       ];
     }
     const pipeline = [
-  {
-    $match: query,
-  },
-];
-
-if (Object.keys(sort).length > 0) {
-  pipeline.push({
-    $sort: sort,
-  });
-}
-
-pipeline.push(
-  {
-    $skip: skip,
-  },
-  {
-    $limit: limit,
-  },
-  {
-    $lookup: {
-      from: "reviews",
-      localField: "_id",
-      foreignField: "product",
-      as: "reviews",
-    },
-  },
-  {
-    $addFields: {
-      totalReviews: {
-        $size: "$reviews",
+      {
+        $match: query,
       },
-      averageRating: {
-        $cond: [
-          { $gt: [{ $size: "$reviews" }, 0] },
-          { $avg: "$reviews.rating" },
-          0,
-        ],
-      },
-    },
-  },
-  {
-    $project: {
-      reviews: 0,
-    },
-  }
-);
+    ];
 
-const products = await ProductModel.aggregate(pipeline);
+    if (Object.keys(sort).length > 0) {
+      pipeline.push({
+        $sort: sort,
+      });
+    }
+
+    pipeline.push(
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "product",
+          as: "reviews",
+        },
+      },
+      {
+        $addFields: {
+          totalReviews: {
+            $size: "$reviews",
+          },
+          averageRating: {
+            $cond: [
+              { $gt: [{ $size: "$reviews" }, 0] },
+              { $avg: "$reviews.rating" },
+              0,
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          reviews: 0,
+        },
+      },
+    );
+
+    const products = await ProductModel.aggregate(pipeline);
 
     const totalProducts = await ProductModel.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
@@ -539,6 +539,15 @@ export const reviewProduct = async (req, res, next) => {
       rating,
       comment,
     });
+    if (review) {
+      const allReviews = await ReviewModel.find({
+        product: productId,
+      });
+      const averageRating=allReviews.length > 0 ? allReviews.reduce((acc,review)=>acc+review.rating, 0)/allReviews.length:0
+      product.totalReviews=allReviews.length
+      product.averageRating=averageRating
+      await product.save()
+    }
     res.status(200).json({
       success: true,
       message: "Review submitted successfully",
