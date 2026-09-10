@@ -35,11 +35,11 @@ const productSchema = new mongoose.Schema(
       min: [0, "Stock must 0 or greater"],
     },
     category: {
-      type:mongoose.Schema.Types.ObjectId,
-      ref:"Category"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
     },
     productimages: [{ publicURL: String, publicId: String }],
-    
+
     status: {
       type: String,
       enum: ["active", "inactive"],
@@ -48,6 +48,15 @@ const productSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    averageRating: {
+      type: Number,
+      max: 5,
+      default: 0,
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true },
