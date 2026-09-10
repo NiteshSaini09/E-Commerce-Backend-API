@@ -58,3 +58,7 @@ export const reviewProductSchema=Joi.object({
   rating:Joi.number().required().min(1).max(5),
   comment:Joi.string().required().trim().max(500),
 })
+export const updateReviewProductSchema=Joi.object({
+  rating:Joi.number().min(1).max(5),
+  comment:Joi.string().trim().max(500),
+}).min(1)

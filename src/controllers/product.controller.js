@@ -255,7 +255,9 @@ export const updateProduct = async (req, res, next) => {
       data.stock = stock;
     }
     if (category) {
-      const productCategory = await CategoryModel.findOne({ name: category.toLowerCase() });
+      const productCategory = await CategoryModel.findOne({
+        name: category.toLowerCase(),
+      });
       if (productCategory) {
         data.category = productCategory._id;
       } else {
@@ -380,7 +382,6 @@ export const uploadImage = async (req, res, next) => {
   }
 };
 
-
 // ------------------Delete Product Image--------------------
 
 export const deleteProductImage = async (req, res, next) => {
@@ -424,91 +425,139 @@ export const deleteProductImage = async (req, res, next) => {
   }
 };
 
-
 // -------------------------------------Review Product-----------------------------------
 
-export const reviewProduct=async(req,res,next)=>{
+export const reviewProduct = async (req, res, next) => {
   try {
-    const productId=req.params.productId
-    const comment=req.body?.comment
-    const rating=req.body?.rating
-    if(!mongoose.isValidObjectId(productId)){
-      throw new ApiError(400,"invalid product id")
+    const productId = req.params.productId;
+    const comment = req.body?.comment;
+    const rating = req.body?.rating;
+    if (!mongoose.isValidObjectId(productId)) {
+      throw new ApiError(400, "invalid product id");
     }
-    const product=await ProductModel.findById(productId)
-    if(!product){
-      throw new ApiError(404,"Product does not exists to rate")
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      throw new ApiError(404, "Product does not exists to rate");
     }
-    if(product.status!=="active"){
-      throw new ApiError(400,"can't rate this product because product not active")
+    if (product.status !== "active") {
+      throw new ApiError(
+        400,
+        "can't rate this product because product not active",
+      );
     }
 
-    const orders=await OrderModel.find({user:req.user._id,orderStatus:"delivered"})
-    if(orders.length==0){
-      throw new ApiError(400,"Buy product to rate")
+    const orders = await OrderModel.find({
+      user: req.user._id,
+      orderStatus: "delivered",
+    });
+    if (orders.length == 0) {
+      throw new ApiError(400, "Buy product to rate");
     }
     // console.log(orders)
-    let productPurchaseStatus=false
-    for(let order of orders){
-      for(let orderItem of order.orderItems){
+    let productPurchaseStatus = false;
+    for (let order of orders) {
+      for (let orderItem of order.orderItems) {
         // console.log(orderItem.product===productId,orderItem.product.toString(),productId)
-        if(orderItem.product.toString()===productId){
-          productPurchaseStatus=true
+        if (orderItem.product.toString() === productId) {
+          productPurchaseStatus = true;
           break;
         }
       }
-      if(productPurchaseStatus){
+      if (productPurchaseStatus) {
         break;
       }
     }
-    if(!productPurchaseStatus){
-      throw new ApiError(400,"Buy product to rate")
+    if (!productPurchaseStatus) {
+      throw new ApiError(400, "Buy product to rate");
     }
 
-    const alreadyReviewStatus=await ReviewModel.findOne({user:req.user._id,product:productId})
-    if(alreadyReviewStatus){
-      throw new ApiError(400,"Your review already submited")
+    const alreadyReviewStatus = await ReviewModel.findOne({
+      user: req.user._id,
+      product: productId,
+    });
+    if (alreadyReviewStatus) {
+      throw new ApiError(400, "Your review already submited");
     }
-    const review=await ReviewModel.create({
-      user:req.user._id,
-      product:productId,
+    const review = await ReviewModel.create({
+      user: req.user._id,
+      product: productId,
       rating,
-      comment
-    })
+      comment,
+    });
     res.status(200).json({
-      success:true,
-      message:"Review submitted successfully",
-      review
-    })
-
+      success: true,
+      message: "Review submitted successfully",
+      review,
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 // -----------------------------------Get all reviews of a product-----------------------------------
 
-export const getReviews=async(req,res,next)=>{
+export const getReviews = async (req, res, next) => {
   try {
-    const productId=req.params.productId 
+    const productId = req.params.productId;
+    if (!mongoose.isValidObjectId(productId)) {
+      throw new ApiError(400, "invalid product id");
+    }
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      throw new ApiError(404, "Product does not exists to get reviews");
+    }
+    const reviews = await ReviewModel.find({ product: productId }).populate(
+      "user",
+      "name",
+    );
+    const totalReviews = reviews.length;
+    const averageRating =
+      totalReviews > 0
+        ? reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews
+        : 0;
+    res.status(200).json({
+      success: true,
+      message: "Reviews retrived successfully",
+      reviews,
+      totalReviews,
+      averageRating,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// -----------------------------------Edit Review of a product-----------------------------------
+
+export const editReview = async (req, res, next) => {
+  try {
+    const { rating, comment } = req.body;
+    // if (!rating && !comment) {
+    //   throw new ApiError(400, "At least one field is required to update");
+    // }
+    const productId = req.params.productId;
     if(!mongoose.isValidObjectId(productId)){
       throw new ApiError(400,"invalid product id")
     }
-    const product=await ProductModel.findById(productId)
-    if(!product){
-      throw new ApiError(404,"Product does not exists to get reviews")
+    const review = await ReviewModel.findOne({user:req.user._id,product:productId});
+    if(!review){
+      throw new ApiError(404,"Review not found for this product by you")
     }
-    const reviews=await ReviewModel.find({product:productId}).populate("user","name")
-    const totalReviews=reviews.length
-    const averageRating=totalReviews>0?reviews.reduce((acc,review)=>acc+review.rating,0)/totalReviews:0
+    const data={}
+    if(rating) data.rating=rating;
+    if(comment) data.comment=comment;
+    const updatedReview = await ReviewModel.findByIdAndUpdate(
+      review._id,
+      data,
+      { new: true }
+    );
     res.status(200).json({
-      success:true,
-      message:"Reviews retrived successfully",
-      reviews,
-      totalReviews,
-      averageRating
-    })
+      success: true,
+      message: "Review updated successfully",
+      updatedReview,
+    });
+
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
