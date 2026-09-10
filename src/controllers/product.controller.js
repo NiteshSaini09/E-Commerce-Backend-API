@@ -207,13 +207,15 @@ export const getProduct = async (req, res, next) => {
     if (!product) {
       throw new ApiError(404, "Product not found");
     }
-    const rating={}
-    const reviews= await ReviewModel.find({product:id})
-    const totalReviews=reviews.length
-    const averageRating=totalReviews > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews: 0;
-    rating.average=averageRating
-    rating.totalReviews=totalReviews
-    console.log(reviews)
+    const rating = {};
+    const reviews = await ReviewModel.find({ product: id });
+    const totalReviews = reviews.length;
+    const averageRating =
+      totalReviews > 0
+        ? reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews
+        : 0;
+    rating.average = averageRating;
+    rating.totalReviews = totalReviews;
     res.status(200).json({
       success: true,
       message: "Product retrived",
@@ -544,52 +546,55 @@ export const editReview = async (req, res, next) => {
     //   throw new ApiError(400, "At least one field is required to update");
     // }
     const productId = req.params.productId;
-    if(!mongoose.isValidObjectId(productId)){
-      throw new ApiError(400,"invalid product id")
+    if (!mongoose.isValidObjectId(productId)) {
+      throw new ApiError(400, "invalid product id");
     }
-    const review = await ReviewModel.findOne({user:req.user._id,product:productId});
-    if(!review){
-      throw new ApiError(404,"Review not found for this product by you")
+    const review = await ReviewModel.findOne({
+      user: req.user._id,
+      product: productId,
+    });
+    if (!review) {
+      throw new ApiError(404, "Review not found for this product by you");
     }
-    const data={}
-    if(rating) data.rating=rating;
-    if(comment) data.comment=comment;
+    const data = {};
+    if (rating) data.rating = rating;
+    if (comment) data.comment = comment;
     const updatedReview = await ReviewModel.findByIdAndUpdate(
       review._id,
       data,
-      { new: true }
+      { new: true },
     );
     res.status(200).json({
       success: true,
       message: "Review updated successfully",
       updatedReview,
     });
-
   } catch (error) {
     next(error);
   }
 };
 
-
 // ---------------------------------------Delete Review of a prduct------------------------------
 
-
 export const deleteReview = async (req, res, next) => {
-  try{
-    const productId=req.params.productId
-    if(!mongoose.isValidObjectId(productId)){
-      throw new ApiError(400,"invalid product id")
+  try {
+    const productId = req.params.productId;
+    if (!mongoose.isValidObjectId(productId)) {
+      throw new ApiError(400, "invalid product id");
     }
-    const review = await ReviewModel.findOne({user:req.user._id,product:productId});
-    if(!review){
-      throw new ApiError(404,"Review not found for this product by you")
+    const review = await ReviewModel.findOne({
+      user: req.user._id,
+      product: productId,
+    });
+    if (!review) {
+      throw new ApiError(404, "Review not found for this product by you");
     }
     await ReviewModel.findByIdAndDelete(review._id);
     res.status(200).json({
       success: true,
-      message: "Review deleted successfully"
+      message: "Review deleted successfully",
     });
-  }catch(error){
-    next(error)
+  } catch (error) {
+    next(error);
   }
-}
+};
