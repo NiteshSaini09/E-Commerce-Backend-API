@@ -561,3 +561,27 @@ export const editReview = async (req, res, next) => {
     next(error);
   }
 };
+
+
+// ---------------------------------------Delete Review of a prduct------------------------------
+
+
+export const deleteReview = async (req, res, next) => {
+  try{
+    const productId=req.params.productId
+    if(!mongoose.isValidObjectId(productId)){
+      throw new ApiError(400,"invalid product id")
+    }
+    const review = await ReviewModel.findOne({user:req.user._id,product:productId});
+    if(!review){
+      throw new ApiError(404,"Review not found for this product by you")
+    }
+    await ReviewModel.findByIdAndDelete(review._id);
+    res.status(200).json({
+      success: true,
+      message: "Review deleted successfully"
+    });
+  }catch(error){
+    next(error)
+  }
+}
