@@ -169,16 +169,61 @@ export const getAll = async (req, res, next) => {
         },
       ];
     }
-    const products = await ProductModel.find(query)
-      .sort(sort)
-      .skip(skip)
-      .limit(limit)
-      .populate("category", "name")
-      .populate("user", "name email");
+    const pipeline = [
+  {
+    $match: query,
+  },
+];
+
+if (Object.keys(sort).length > 0) {
+  pipeline.push({
+    $sort: sort,
+  });
+}
+
+pipeline.push(
+  {
+    $skip: skip,
+  },
+  {
+    $limit: limit,
+  },
+  {
+    $lookup: {
+      from: "reviews",
+      localField: "_id",
+      foreignField: "product",
+      as: "reviews",
+    },
+  },
+  {
+    $addFields: {
+      totalReviews: {
+        $size: "$reviews",
+      },
+      averageRating: {
+        $cond: [
+          { $gt: [{ $size: "$reviews" }, 0] },
+          { $avg: "$reviews.rating" },
+          0,
+        ],
+      },
+    },
+  },
+  {
+    $project: {
+      reviews: 0,
+    },
+  }
+);
+
+const products = await ProductModel.aggregate(pipeline);
+
     const totalProducts = await ProductModel.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
     const hasNextPage = page < totalPages;
     const hasPreviousPage = page > 1;
+
     res.status(200).json({
       success: true,
       message: "Products retrived",
