@@ -652,3 +652,26 @@ export const deleteReview = async (req, res, next) => {
     next(error);
   }
 };
+
+
+// ------------------------------------Get users own review ---------------------------------------------------
+
+export const myReview= async (req,res,next)=>{
+  try {
+    const productId= req.params.productId
+    if(!mongoose.isValidObjectId(productId)){
+      throw new ApiError(400,"invalid product id")
+    }
+    const myReview=await ReviewModel.findOne({user:req.user._id,product:productId})
+    if(!myReview){
+      throw new ApiError(404,"Your review not found for this product")
+    }
+    res.status(200).json({
+      success:true,
+      message:"Review retrived",
+      myReview
+    })
+  } catch (error) {
+    next(error)
+  }
+}

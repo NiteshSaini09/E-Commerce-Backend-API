@@ -25,5 +25,7 @@ router.route("/:productId/reviews").post(verifyJWT,validate(reviewProductSchema)
 router.route("/:productId/reviews").get(productController.getReviews);
 router.route("/:productId/reviews").patch(verifyJWT,validate(updateReviewProductSchema), productController.editReview);
 router.route("/:productId/reviews").delete(verifyJWT, productController.deleteReview);
+router.route("/:productId/reviews/me").get(verifyJWT, productController.myReview);
+
 
 export default router;
