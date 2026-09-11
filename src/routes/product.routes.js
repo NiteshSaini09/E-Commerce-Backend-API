@@ -14,7 +14,7 @@ import  upload  from "../middleware/multer.middleware.js";
 import { ProductModel } from "../models/product.model.js";
 
 const router = Router();
-router.route("/").post(verifyJWT,verifyAdmin,validate(addProductSchema),upload.array("productImages",5),productController.create,);
+router.route("/").post(verifyJWT,verifyAdmin,upload.array("productImages",5),validate(addProductSchema),productController.create,);
 router.route("/").get(validate(querySchema,'query'),productController.getAll);
 router.route("/:id").get(productController.getProduct);
 router.route("/:id").patch(verifyJWT,verifyAdmin,validate(updateProductSchema),productController.updateProduct,);
