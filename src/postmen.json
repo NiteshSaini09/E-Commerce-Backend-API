@@ -1,0 +1,1153 @@
+{
+  "info": {
+    "_postman_id": "5733506b-0a39-49aa-9dcd-096b244e6ceb",
+    "name": "e-commerce backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56979409",
+    "_collection_link": "https://go.postman.co/collection/56979409-5733506b-0a39-49aa-9dcd-096b244e6ceb?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Hitesh Kumar Saini"
+                },
+                {
+                  "key": "email",
+                  "value": "hs285613@gmail.com"
+                },
+                {
+                  "key": "password",
+                  "value": "123456"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/user/register",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "profile",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Nitesh Saini",
+                  "type": "text",
+                  "uuid": "1915b9f5-c7ac-4556-9592-3840597c4cb8"
+                },
+                {
+                  "key": "email",
+                  "value": "nitesh.tech.dev@gmail.com",
+                  "type": "text",
+                  "uuid": "98ee4b4c-e4cb-4889-b26d-2270ae890a12"
+                },
+                {
+                  "key": "password",
+                  "value": "123456",
+                  "type": "text",
+                  "uuid": "6efeac26-9c69-49c5-adb8-2f3e9f27549e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/user/profile",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/user/log-out",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "log-out"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "refresh-access-token",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "email",
+                  "value": "nitesh.tech.dev@gmail.com",
+                  "type": "text",
+                  "uuid": "c1075fe9-c856-49f9-9695-54b83678932d"
+                },
+                {
+                  "key": "password",
+                  "value": "123456",
+                  "type": "text",
+                  "uuid": "8ff34fa6-4bfe-41d4-8f59-7d77daed4999"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/user/refresh-access-token",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "refresh-access-token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "email",
+                  "value": "nitesh.tech.dev@gmail.com",
+                  "type": "text",
+                  "uuid": "c1075fe9-c856-49f9-9695-54b83678932d"
+                },
+                {
+                  "key": "password",
+                  "value": "123456",
+                  "type": "text",
+                  "uuid": "8ff34fa6-4bfe-41d4-8f59-7d77daed4999"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/user/login",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "product",
+      "item": [
+        {
+          "name": "create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "",
+                "value": "",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Charger",
+                  "type": "text"
+                },
+                {
+                  "key": "brand",
+                  "value": "Lenovo",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "230",
+                  "type": "text"
+                },
+                {
+                  "key": "discount",
+                  "value": "2",
+                  "type": "text"
+                },
+                {
+                  "key": "stock",
+                  "value": "4",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "electronics",
+                  "type": "text"
+                },
+                {
+                  "key": "productImages",
+                  "type": "file",
+                  "src": [
+                    "/C:/Users/nktec/Downloads/Youtube MERN/ChatGPT Image Sep 10, 2026, 11_20_11 AM.png"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/product",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "product"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetAll",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/product?limit=20",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "product"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "a",
+                  "disabled": true
+                },
+                {
+                  "key": "minPrice",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "13000",
+                  "disabled": true
+                },
+                {
+                  "key": "order",
+                  "value": "price_asc",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "name",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "3",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "category",
+                  "value": "6a9c36e8eca2bc7529dd41f2",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GetProductById",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/product/6a9c394feca2bc7529dd4209",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "product",
+                "6a9c394feca2bc7529dd4209"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Strip Light",
+                  "disabled": true
+                },
+                {
+                  "key": "discount",
+                  "value": "13",
+                  "disabled": true
+                },
+                {
+                  "key": "price",
+                  "value": "530",
+                  "disabled": true
+                },
+                {
+                  "key": "stock",
+                  "value": "8",
+                  "disabled": true
+                },
+                {
+                  "key": "brand",
+                  "value": "Lendor",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "ELecTroniCs"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/product/6a997fb9884b13d2aa8c6873",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "product",
+                "6a997fb9884b13d2aa8c6873"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/product/6a96448e1040b2b4b4458a01",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "product",
+                "6a96448e1040b2b4b4458a01"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "upload product images",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "productImages",
+                  "type": "file",
+                  "src": [
+                    "/C:/Users/nktec/OneDrive/Pictures/Gemini_Generated_Image_1feept1feept1fee.png",
+                    "/C:/Users/nktec/OneDrive/Pictures/ChatGPT Image Apr 2, 2025, 04_45_19 PM (3).png",
+                    "/C:/Users/nktec/OneDrive/Pictures/clock-time-old-roman.jpg",
+                    "/C:/Users/nktec/OneDrive/Pictures/demoKing - Copy.jpg"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/product/6a970f46fd78060b515e5a13/images",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "product",
+                "6a970f46fd78060b515e5a13",
+                "images"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete product image",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "publicId",
+                  "value": "productimages/uzh6exs0midlctc4wur0"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/product/6a9822c969bff20f9122f3fd/images",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "product",
+                "6a9822c969bff20f9122f3fd",
+                "images"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "review a product",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "comment",
+                  "value": "आपके Practical Exams निम्नानुसार आयोजित किए जाएंगे"
+                },
+                {
+                  "key": "rating",
+                  "value": "3"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/product/6aa2b3f53003720bc43aae99/reviews",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "product",
+                "6aa2b3f53003720bc43aae99",
+                "reviews"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all reviews of a product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/product/6aa2b3f53003720bc43aae99/reviews",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "product",
+                "6aa2b3f53003720bc43aae99",
+                "reviews"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User own review",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "category",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [],
+                  "disabled": true
+                },
+                {
+                  "key": "isActive",
+                  "value": "false",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "description",
+                  "value": "Cars all that you wish",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/category/create",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "category",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/category",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "category"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/category/6a994b5ad5f853eeb1777db2",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "category",
+                "6a994b5ad5f853eeb1777db2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "TV",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Available all",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [
+                    "/C:/Users/nktec/OneDrive/Pictures/ChatGPT Image Apr 1, 2025, 03_29_30 PM.png"
+                  ],
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/category/6a997d269b5cdef0822011e3",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "category",
+                "6a997d269b5cdef0822011e3"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/category/6a997d269b5cdef0822011e3",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "category",
+                "6a997d269b5cdef0822011e3"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Add",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "productId",
+                  "value": "6aa2b3f53003720bc43aae99"
+                },
+                {
+                  "key": "quantity",
+                  "value": "1"
+                },
+                {
+                  "key": "productId",
+                  "value": "6a9c3831eca2bc7529dd4200",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/cart",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "cart"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/cart",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "cart"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Quality",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "productId",
+                  "value": "6a9c394feca2bc7529dd4209"
+                },
+                {
+                  "key": "quantity",
+                  "value": "-11"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/cart/update-uantity",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "cart",
+                "update-uantity"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "productId",
+                  "value": "6a9c3831eca2bc7529dd4200"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/cart/remove",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "cart",
+                "remove"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CheckOut",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/cart/checkout",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "cart",
+                "checkout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "place order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "fullname",
+                  "value": "Second User"
+                },
+                {
+                  "key": "phone",
+                  "value": "9494939358"
+                },
+                {
+                  "key": "address",
+                  "value": "Papda"
+                },
+                {
+                  "key": "city",
+                  "value": "Neem ka thana"
+                },
+                {
+                  "key": "state",
+                  "value": "Raj"
+                },
+                {
+                  "key": "postalcode",
+                  "value": "332001"
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/order",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "order"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "My Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/order/my-orders",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "order",
+                "my-orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Order By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/order/my-orders/6aa035a137a45429fc1b5537",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "order",
+                "my-orders",
+                "6aa035a137a45429fc1b5537"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancle Order",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/order/my-orders/6aa035a137a45429fc1b5537/cancle",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "order",
+                "my-orders",
+                "6aa035a137a45429fc1b5537",
+                "cancle"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "get all orders by admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/admin/orders",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "createdAt",
+                  "disabled": true
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "oldestt",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Reviews by admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/admin/reviews",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "reviews"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update order state",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "localhost:4000/api/v1/admin/orders/6aa2f395c299c6d60e0ae0e1/state",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "orders",
+                "6aa2f395c299c6d60e0ae0e1",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete a review",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "localhost:4000/api/v1/admin/reviews/6aa2a660f29a4858151f8561",
+              "host": [
+                "localhost"
+              ],
+              "port": "4000",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "reviews",
+                "6aa2a660f29a4858151f8561"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "root",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}
