@@ -24,7 +24,6 @@ export const makeOrder = async (req, res, next) => {
     const { fullname, phone, address, city, state, postalcode, country } =
       req.body;
     let cart = realCart.toObject();
-    // console.log(cart)
     if (cart.items.length == 0) {
       throw new ApiError(400, "Cart is empty, Add products to cart");
     }
