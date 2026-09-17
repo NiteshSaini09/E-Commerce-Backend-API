@@ -76,7 +76,6 @@ export const create = async (req, res, next) => {
     const createdProduct = await ProductModel.findById(product._id).populate(
       "category",
     );
-    // console.log(req.files)
     res.status(200).json({
       success: true,
       message: "Product added successfully",
